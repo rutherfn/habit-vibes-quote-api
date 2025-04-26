@@ -7,6 +7,6 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         
-      - name: Build the app
+      - name: Build the API
         run: ./gradlew build
 

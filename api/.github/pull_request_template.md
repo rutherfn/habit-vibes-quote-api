@@ -1,5 +1,5 @@
 ### Trello
-https://trello.com/b/UAh3A6Yj/project-track-my-shot
+https://trello.com/b/exa39wjD/habit-vibes-quote-api
 
 ### Issues
 * issue 1

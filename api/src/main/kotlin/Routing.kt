@@ -16,7 +16,7 @@ fun Application.configureRouting() {
                 listOf(
                     Quote(
                         id = 4,
-                        author = "test",
+                        author = "testss",
                         source = "test1",
                         tags = listOf("tag1", "tag2"),
                         createdAt = "test createdat",

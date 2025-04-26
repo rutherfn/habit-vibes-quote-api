@@ -1,4 +1,4 @@
-name: Assemble
+name: Run Unit Tests For API
 on: [pull_request]
 jobs:
   build:
@@ -7,5 +7,5 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
 
-      - name: Assemble the app
-        run: ./gradlew assemble
+      - name: Run All Unit Tests in the API
+        run: ./gradlew test

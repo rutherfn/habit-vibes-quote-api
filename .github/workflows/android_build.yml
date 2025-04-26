@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Build API
 on: [pull_request]
 jobs:
   build:
@@ -6,6 +6,7 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+        
+      - name: Build the API
+        run: ./gradlew build
 
-      - name: Run All Unit Tests in the app
-        run: ./gradlew test

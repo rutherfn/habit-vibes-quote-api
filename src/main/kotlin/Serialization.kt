@@ -7,10 +7,15 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import kotlinx.serialization.json.Json
+
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json()
+        json(Json {
+            prettyPrint = true
+            ignoreUnknownKeys = true
+        })
     }
     routing {
         get("/json/kotlinx-serialization") {

@@ -2,19 +2,9 @@ package com.nciholas.rutherford.habit.vibes.quote.repository
 
 import com.nciholas.rutherford.habit.vibes.quote.model.Quote
 
-object QuoteRepository {
-    private val quotes: MutableList<Quote> = mutableListOf()
-
-    fun allQuotes(): List<Quote> = quotes
-
-    fun quoteByTitle(title: String) = quotes.find {
-        it.title.equals(title, ignoreCase = true)
-    }
-
-    fun addQuote(quote: Quote) {
-        if (quoteByTitle(title = quote.title) != null) {
-            throw IllegalStateException("Cannot duplicate task names!")
-        }
-        quotes.add(quote)
-    }
+interface QuoteRepository {
+    suspend fun allAllQuotes(): List<Quote>
+    suspend fun addQuote(quote: Quote)
+    suspend fun quoteByTitle(title: String): Quote?
+    suspend fun removeQuote(quote: Quote)
 }

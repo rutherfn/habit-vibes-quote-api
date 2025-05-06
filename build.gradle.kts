@@ -18,6 +18,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -28,6 +29,9 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.postgresql)
     implementation(libs.h2)
+    implementation("io.ktor:ktor-server-swagger:2.3.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    //implementation(libs.ktor.swagger.ui)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.ktor.server.netty)
@@ -35,4 +39,5 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation("com.jayway.jsonpath:json-path:2.9.0")
 }

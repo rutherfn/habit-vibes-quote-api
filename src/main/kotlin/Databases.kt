@@ -2,15 +2,34 @@ package com.nciholas.rutherford.habit.vibes.quote
 
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.sql.DriverManager
 
 fun Application.configureDatabases() {
-    Database.connect(
+    val db = Database.connect(
         "jdbc:postgresql://localhost:5432/ktor_tutorial_db",
         user = "postgresql",
         password = "password"
     )
+
+    checkForDbConnection(db = db)
+}
+
+private fun checkForDbConnection(db: Database) {
+    try {
+        transaction(db) {
+            exec("SELECT 1") { rs ->
+                if (rs?.next() == true) {
+                    println("Database connected successfully.")
+                } else {
+                    println("Database connection check failed.")
+                }
+            }
+        }
+    } catch (e: Exception) {
+        println("Failed to connect to database: ${e.localizedMessage}")
+    }
 }
 
 /**

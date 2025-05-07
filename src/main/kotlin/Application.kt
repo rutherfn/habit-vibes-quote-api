@@ -9,8 +9,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     val repository = TestQuoteRepository()
-   // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
-
+    // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
 
     configureSerialization()
     configureDatabases()

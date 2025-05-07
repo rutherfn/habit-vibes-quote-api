@@ -10,5 +10,5 @@ data class Quote(
     val source: String,
     val tags: List<String>,
     val createdAt: String,
-    val loggedBy: String?
+    val loggedBy: String?,
 )

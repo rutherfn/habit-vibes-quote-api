@@ -2,14 +2,21 @@ package com.nciholas.rutherford.habit.vibes.quote
 
 import com.nciholas.rutherford.habit.vibes.quote.model.Quote
 import com.nciholas.rutherford.habit.vibes.quote.repository.QuoteRepository
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.plugins.swagger.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.http.content.staticResources
+import io.ktor.server.plugins.ContentTransformationException
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.plugins.swagger.swaggerUI
+import io.ktor.server.request.receive
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 
 fun Application.configureRouting(quoteRepository: QuoteRepository) {
@@ -18,19 +25,19 @@ fun Application.configureRouting(quoteRepository: QuoteRepository) {
             exception<ContentTransformationException> { call, cause ->
                 call.respond(
                     HttpStatusCode.BadRequest,
-                    ErrorResponse("Malformed request", cause.localizedMessage)
+                    ErrorResponse("Malformed request", cause.localizedMessage),
                 )
             }
             exception<IllegalStateException> { call, cause ->
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    ErrorResponse("Internal server error", cause.localizedMessage)
+                    ErrorResponse("Internal server error", cause.localizedMessage),
                 )
             }
             exception<Throwable> { call, cause ->
                 call.respond(
                     HttpStatusCode.ServiceUnavailable,
-                    ErrorResponse("Unexpected error", cause.localizedMessage)
+                    ErrorResponse("Unexpected error", cause.localizedMessage),
                 )
             }
         }
@@ -87,4 +94,3 @@ fun Application.configureRouting(quoteRepository: QuoteRepository) {
         }
     }
 }
-

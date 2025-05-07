@@ -1,17 +1,18 @@
 package com.nciholas.rutherford.habit.vibes.quote
 
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.sql.DriverManager
 
 fun Application.configureDatabases() {
-    val db = Database.connect(
-        "jdbc:postgresql://localhost:5432/ktor_tutorial_db",
-        user = "postgresql",
-        password = "password"
-    )
+    val db =
+        Database.connect(
+            "jdbc:postgresql://localhost:5432/ktor_tutorial_db",
+            user = "postgresql",
+            password = "password",
+        )
 
     checkForDbConnection(db = db)
 }

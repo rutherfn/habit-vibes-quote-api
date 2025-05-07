@@ -6,7 +6,6 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 class JsonReader {
-
     fun readEnableToggles(path: String): List<Toggle> {
         val toggleArrayList: ArrayList<Toggle> = arrayListOf()
 

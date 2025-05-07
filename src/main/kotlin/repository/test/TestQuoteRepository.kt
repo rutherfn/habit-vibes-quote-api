@@ -1,9 +1,12 @@
-package com.nciholas.rutherford.habit.vibes.quote.repository
+package com.nciholas.rutherford.habit.vibes.quote.repository.test
 
 import com.nciholas.rutherford.habit.vibes.quote.model.Quote
+import com.nciholas.rutherford.habit.vibes.quote.repository.QuoteRepository
 
-class TestQuoteRepository: QuoteRepository {
-    private val quotes: MutableList<Quote> = mutableListOf(
+class TestQuoteRepository(
+    overrideQuotes: MutableList<Quote>? = null
+): QuoteRepository {
+    private val quotes: MutableList<Quote> = overrideQuotes ?: mutableListOf(
         Quote(
             id = 1,
             title = "The only limit to our realization of tomorrow is our doubts of today.",
@@ -96,14 +99,11 @@ class TestQuoteRepository: QuoteRepository {
         )
     )
 
-    internal fun quoteByTitle(title: String) = quotes.find {
-        it.title.equals(title, ignoreCase = true)
-    }
-
+    override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.title.equals(title, ignoreCase = true) }
     override suspend fun getAllQuotes(): List<Quote> = quotes
 
     override suspend fun postQuote(quote: Quote) {
-        if (quoteByTitle(title = quote.title) != null) {
+        if (getQuoteByTitle(title = quote.title) != null) {
             throw IllegalStateException("Cannot duplicate quotes names!")
         }
         quotes.add(quote)
@@ -113,7 +113,7 @@ class TestQuoteRepository: QuoteRepository {
         val quotesToAddArrayList: ArrayList<Quote> = arrayListOf()
 
         quotesList.forEach { quote ->
-            if (quoteByTitle(title = quote.title) == null) {
+            if (getQuoteByTitle(title = quote.title) == null) {
                 quotesToAddArrayList.add(quote)
             } else {
                 println("Cannot add quote $quote since it already exists")
@@ -121,12 +121,6 @@ class TestQuoteRepository: QuoteRepository {
         }
 
         quotes.addAll(quotesToAddArrayList)
-    }
-
-    override suspend fun getQuoteByTitle(title: String): Quote? {
-        val quote = quotes.find { it.title == title }
-
-        return quote
     }
 
     override suspend fun removeQuote(quote: Quote) {

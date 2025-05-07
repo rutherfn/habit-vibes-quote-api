@@ -10,62 +10,81 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 
 fun Application.configureRouting(quoteRepository: QuoteRepository) {
     routing {
-        staticResources("static", "static")
-
-        swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
-
         install(StatusPages) {
+            exception<ContentTransformationException> { call, cause ->
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ErrorResponse("Malformed request", cause.localizedMessage)
+                )
+            }
+            exception<IllegalStateException> { call, cause ->
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ErrorResponse("Internal server error", cause.localizedMessage)
+                )
+            }
             exception<Throwable> { call, cause ->
-                call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
+                call.respond(
+                    HttpStatusCode.ServiceUnavailable,
+                    ErrorResponse("Unexpected error", cause.localizedMessage)
+                )
             }
         }
 
+        staticResources("static", "static")
+        swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
+
         route("/quotes") {
             get {
-                call.respond(quoteRepository.getAllQuotes())
-            }
-            post {
-                try {
-                    quoteRepository.postQuote(quote = call.receive<Quote>())
-                    call.respond(HttpStatusCode.Created)
-                } catch (ex: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                } catch (ex: IllegalStateException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                val quotes = quoteRepository.getAllQuotes()
+                if (quotes.isEmpty()) {
+                    call.respond(status = HttpStatusCode.NotFound, message = ErrorResponse("No quotes found"))
+                } else {
+                    call.respond(status = HttpStatusCode.OK, message = quotes)
                 }
             }
+
             post {
+                val bodyText = call.receiveText()
+
                 try {
-                    quoteRepository.postQuotes(quotes = call.receive<List<Quote>>())
+                    if (bodyText.trim().startsWith(prefix = "[")) {
+                        val quotes = Json.decodeFromString<List<Quote>>(bodyText)
+                        quoteRepository.postQuotes(quotes)
+                    } else {
+                        val quote = Json.decodeFromString<Quote>(bodyText)
+                        quoteRepository.postQuote(quote)
+                    }
                     call.respond(HttpStatusCode.Created)
-                } catch (ex: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                } catch (ex: IllegalStateException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                } catch (ex: Exception) {
+                    call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Invalid request", ex.localizedMessage ?: ""))
                 }
             }
 
             delete {
-                quoteRepository.removeQuote(quote = call.receive<Quote>())
+                val quote = call.receive<Quote>()
+                quoteRepository.removeQuote(quote)
                 call.respond(quoteRepository.getAllQuotes())
             }
         }
 
-        route("/quotes/{title}") {
-            get {
-                val title = call.parameters["title"]
-
-                if (title != null) {
-                    quoteRepository.getQuoteByTitle(title = title)?.let { quoteByName ->
-                        call.respond(quoteByName)
-                    }
+        get("/quotes/search/{title?}") {
+            val title = call.parameters["title"]
+            if (title != null) {
+                val quote = quoteRepository.getQuoteByTitle(title)
+                if (quote != null) {
+                    call.respond(quote)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(status = HttpStatusCode.NotFound, ErrorResponse("Quote not found"))
                 }
+            } else {
+                call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Missing title"))
             }
         }
     }
 }
+

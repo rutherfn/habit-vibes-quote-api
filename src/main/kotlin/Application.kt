@@ -1,6 +1,6 @@
 package com.nciholas.rutherford.habit.vibes.quote
 
-import com.nciholas.rutherford.habit.vibes.quote.repository.TestQuoteRepository
+import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.server.application.Application
 
 fun main(args: Array<String>) {

@@ -104,7 +104,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
 
     override suspend fun postQuote(quote: Quote) {
         if (getQuoteByTitle(title = quote.title) != null) {
-            throw IllegalStateException("Cannot duplicate quotes names!")
+            throw IllegalStateException("Cannot create duplicate quote titles!")
         }
         quotes.add(quote)
     }

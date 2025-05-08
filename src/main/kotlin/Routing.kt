@@ -1,6 +1,7 @@
 package com.nciholas.rutherford.habit.vibes.quote
 
 import com.nciholas.rutherford.habit.vibes.quote.model.Quote
+import com.nciholas.rutherford.habit.vibes.quote.repository.PendingQuoteRepository
 import com.nciholas.rutherford.habit.vibes.quote.repository.QuoteRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -19,7 +20,10 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 
-fun Application.configureRouting(quoteRepository: QuoteRepository) {
+fun Application.configureRouting(
+    quoteRepository: QuoteRepository,
+    pendingQuoteRepository: PendingQuoteRepository
+) {
     routing {
         install(StatusPages) {
             exception<ContentTransformationException> { call, cause ->
@@ -90,6 +94,71 @@ fun Application.configureRouting(quoteRepository: QuoteRepository) {
                 }
             } else {
                 call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Missing title"))
+            }
+        }
+
+        route("/pending/quotes") {
+            get {
+                val quotes = pendingQuoteRepository.getAllPendingQuotes()
+                if (quotes.isEmpty()) {
+                    call.respond(status = HttpStatusCode.NotFound, message = ErrorResponse("No pending quotes found"))
+                } else {
+                    call.respond(status = HttpStatusCode.OK, message = quotes)
+                }
+            }
+
+            post {
+                val bodyText = call.receiveText()
+
+                try {
+                    if (bodyText.trim().startsWith(prefix = "[")) {
+                        val quotes = Json.decodeFromString<List<Quote>>(bodyText)
+                        pendingQuoteRepository.postQuotes(quotes)
+                    } else {
+                        val quote = Json.decodeFromString<Quote>(bodyText)
+                        pendingQuoteRepository.postQuote(quote)
+                    }
+                    call.respond(HttpStatusCode.Created)
+                } catch (ex: Exception) {
+                    call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Invalid request", ex.localizedMessage ?: ""))
+                }
+            }
+
+            delete {
+                val quote = call.receive<Quote>()
+                pendingQuoteRepository.removeQuote(quote)
+                call.respond(pendingQuoteRepository.getAllPendingQuotes())
+            }
+        }
+
+        get("pending//quotes/search/{title?}") {
+            val title = call.parameters["title"]
+            if (title != null) {
+                val quote = pendingQuoteRepository.getQuoteByTitle(title)
+                if (quote != null) {
+                    call.respond(quote)
+                } else {
+                    call.respond(status = HttpStatusCode.NotFound, ErrorResponse("Quote not found"))
+                }
+            } else {
+                call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Missing title"))
+            }
+        }
+
+        post("pending/quotes/promote") {
+            val bodyText = call.receiveText()
+
+            try {
+                if (bodyText.trim().startsWith(prefix = "[")) {
+                    val quotes = Json.decodeFromString<List<Quote>>(bodyText)
+                    pendingQuoteRepository.promoteQuotes(quotes = quotes)
+                } else {
+                    val quote = Json.decodeFromString<Quote>(bodyText)
+                    pendingQuoteRepository.promoteQuote(quote = quote)
+                }
+                call.respond(HttpStatusCode.Created)
+            } catch (ex: Exception) {
+                call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Invalid request", ex.localizedMessage ?: ""))
             }
         }
     }

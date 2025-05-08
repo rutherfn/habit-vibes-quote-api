@@ -3,9 +3,7 @@ package com.nciholas.rutherford.habit.vibes.quote.repository.test
 import com.nciholas.rutherford.habit.vibes.quote.model.Quote
 import com.nciholas.rutherford.habit.vibes.quote.repository.QuoteRepository
 
-class TestQuoteRepository(
-    overrideQuotes: MutableList<Quote>? = null,
-) : QuoteRepository {
+class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRepository {
     private val quotes: MutableList<Quote> =
         overrideQuotes ?: mutableListOf(
             Quote(

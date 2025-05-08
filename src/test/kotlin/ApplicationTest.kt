@@ -1,6 +1,7 @@
 package com.nciholas.rutherford.habit.vibes.quote
 
 import com.nciholas.rutherford.habit.vibes.quote.model.Quote
+import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -22,6 +23,8 @@ import kotlin.test.assertEquals
 
 class ApplicationTest {
     private val quoteRepository = TestQuoteRepository()
+    private val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
+
     private val json =
         Json {
             prettyPrint = true
@@ -30,7 +33,7 @@ class ApplicationTest {
 
     private fun Application.setup() {
         install(ContentNegotiation) { json(json) }
-        configureRouting(quoteRepository)
+        configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
     }
 
     @Test
@@ -46,9 +49,13 @@ class ApplicationTest {
     @Test
     fun `get quotes with empty list`() =
         testApplication {
+            val quoteRepository = TestQuoteRepository(overrideQuotes = mutableListOf())
             application {
                 install(ContentNegotiation) { json(json) }
-                configureRouting(TestQuoteRepository(overrideQuotes = mutableListOf()))
+                configureRouting(
+                    quoteRepository = quoteRepository,
+                    pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
+                )
             }
             val response = client.get("/quotes")
             assertEquals(HttpStatusCode.NotFound, response.status)

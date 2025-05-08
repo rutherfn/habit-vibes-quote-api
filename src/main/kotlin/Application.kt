@@ -1,5 +1,6 @@
 package com.nciholas.rutherford.habit.vibes.quote
 
+import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.server.application.Application
 
@@ -8,10 +9,11 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val repository = TestQuoteRepository()
+    val quoteRepository = TestQuoteRepository()
+    val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
     // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
 
     configureSerialization()
     configureDatabases()
-    configureRouting(quoteRepository = repository)
+    configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
 }

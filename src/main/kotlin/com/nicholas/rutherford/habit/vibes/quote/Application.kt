@@ -14,6 +14,6 @@ fun Application.module() {
     // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
 
     configureSerialization()
-   // configureDatabases()
+    configureDatabases()
     configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
 }

@@ -39,5 +39,5 @@ dependencies {
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
-    testImplementation(libs.jayway.jsonpath )
+    testImplementation(libs.jayway.jsonpath)
 }

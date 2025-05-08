@@ -8,44 +8,45 @@ class TestPendingQuoteRepository(
     overrideQuotes: MutableList<Quote>? = null,
     private val quoteRepository: QuoteRepository,
 ) : PendingQuoteRepository {
-    private val quotes: MutableList<Quote> = overrideQuotes ?: mutableListOf(
-        Quote(
-            id = 1,
-            title = "Great things are not done by impulse, but by a series of small things brought together.",
-            author = "Vincent Van Gogh",
-            source = "Letter",
-            tags = listOf("patience", "creativity", "effort"),
-            createdAt = "2025-04-27T10:00:00Z",
-            loggedBy = "admin",
-        ),
-        Quote(
-            id = 2,
-            title = "Don't watch the clock; do what it does. Keep going.",
-            author = "Sam Levenson",
-            source = "Book",
-            tags = listOf("time", "motivation", "persistence"),
-            createdAt = "2025-04-27T10:05:00Z",
-            loggedBy = "admin",
-        ),
-        Quote(
-            id = 3,
-            title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
-            author = "Ralph Waldo Emerson",
-            source = "Essay",
-            tags = listOf("strength", "character", "potential"),
-            createdAt = "2025-04-27T10:10:00Z",
-            loggedBy = "user123",
-        ),
-        Quote(
-            id = 4,
-            title = "Act as if what you do makes a difference. It does.",
-            author = "William James",
-            source = "Lecture",
-            tags = listOf("impact", "life", "action"),
-            createdAt = "2025-04-27T10:15:00Z",
-            loggedBy = "user456",
-        ),
-    )
+    private val quotes: MutableList<Quote> =
+        overrideQuotes ?: mutableListOf(
+            Quote(
+                id = 1,
+                title = "Great things are not done by impulse, but by a series of small things brought together.",
+                author = "Vincent Van Gogh",
+                source = "Letter",
+                tags = listOf("patience", "creativity", "effort"),
+                createdAt = "2025-04-27T10:00:00Z",
+                loggedBy = "admin",
+            ),
+            Quote(
+                id = 2,
+                title = "Don't watch the clock; do what it does. Keep going.",
+                author = "Sam Levenson",
+                source = "Book",
+                tags = listOf("time", "motivation", "persistence"),
+                createdAt = "2025-04-27T10:05:00Z",
+                loggedBy = "admin",
+            ),
+            Quote(
+                id = 3,
+                title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                author = "Ralph Waldo Emerson",
+                source = "Essay",
+                tags = listOf("strength", "character", "potential"),
+                createdAt = "2025-04-27T10:10:00Z",
+                loggedBy = "user123",
+            ),
+            Quote(
+                id = 4,
+                title = "Act as if what you do makes a difference. It does.",
+                author = "William James",
+                source = "Lecture",
+                tags = listOf("impact", "life", "action"),
+                createdAt = "2025-04-27T10:15:00Z",
+                loggedBy = "user456",
+            ),
+        )
 
     override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.title.equals(title, ignoreCase = true) }
 

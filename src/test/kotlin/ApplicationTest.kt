@@ -65,7 +65,7 @@ class ApplicationTest {
                 install(ContentNegotiation) { json(json) }
                 configureRouting(
                     quoteRepository = quoteRepository,
-                    pendingQuoteRepository = pendingQuoteRepository
+                    pendingQuoteRepository = pendingQuoteRepository,
                 )
             }
             val response = client.get("/quotes")
@@ -81,7 +81,11 @@ class ApplicationTest {
                 install(ContentNegotiation) { json(json) }
                 configureRouting(
                     quoteRepository = quoteRepository,
-                    pendingQuoteRepository = TestPendingQuoteRepository(overrideQuotes = mutableListOf(), quoteRepository = quoteRepository),
+                    pendingQuoteRepository =
+                        TestPendingQuoteRepository(
+                            overrideQuotes = mutableListOf(),
+                            quoteRepository = quoteRepository,
+                        ),
                 )
             }
             val response = client.get("/pending/quotes")
@@ -178,7 +182,7 @@ class ApplicationTest {
                     setBody(malformedJson)
                 }
             assertEquals(HttpStatusCode.BadRequest, response.status)
-            }
+        }
 
     @Test
     fun `delete a quote`() =
@@ -261,7 +265,8 @@ class ApplicationTest {
     fun `promote one pending quote to regular quotes`() =
         testApplication {
             application { setup() }
-                val newQuote = Quote(
+            val newQuote =
+                Quote(
                     id = 21,
                     title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
                     author = "Ralph Waldo Emerson",
@@ -271,51 +276,52 @@ class ApplicationTest {
                     loggedBy = "user123",
                 )
 
-                val response =
-                    client.post("pending/quotes/promote") {
-                        contentType(ContentType.Application.Json)
-                        setBody(json.encodeToString(newQuote))
-                    }
+            val response =
+                client.post("pending/quotes/promote") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuote))
+                }
 
-                assertEquals(HttpStatusCode.Created, response.status)
-                assertEquals(4, pendingQuoteRepository.getAllPendingQuotes().size)
-                assertEquals(11, quoteRepository.getAllQuotes().size)
+            assertEquals(HttpStatusCode.Created, response.status)
+            assertEquals(4, pendingQuoteRepository.getAllPendingQuotes().size)
+            assertEquals(11, quoteRepository.getAllQuotes().size)
         }
 
     @Test
     fun `promote a list of pending quotes to regular quotes`() =
         testApplication {
             application { setup() }
-            val newQuotes = listOf(
-                Quote(
-                    id = 21,
-                    title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
-                    author = "Ralph Waldo Emerson",
-                    source = "Essay",
-                    tags = listOf("strength", "character", "potential"),
-                    createdAt = "2025-04-27T10:10:00Z",
-                    loggedBy = "user123"
-                ),
-                Quote(
-                    id = 22,
-                    title = "Act as if what you do makes a difference. It does.",
-                    author = "William James",
-                    source = "Lecture",
-                    tags = listOf("impact", "life", "action"),
-                    createdAt = "2025-04-27T10:15:00Z",
-                    loggedBy = "user456"
+            val newQuotes =
+                listOf(
+                    Quote(
+                        id = 21,
+                        title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                        author = "Ralph Waldo Emerson",
+                        source = "Essay",
+                        tags = listOf("strength", "character", "potential"),
+                        createdAt = "2025-04-27T10:10:00Z",
+                        loggedBy = "user123",
+                    ),
+                    Quote(
+                        id = 22,
+                        title = "Act as if what you do makes a difference. It does.",
+                        author = "William James",
+                        source = "Lecture",
+                        tags = listOf("impact", "life", "action"),
+                        createdAt = "2025-04-27T10:15:00Z",
+                        loggedBy = "user456",
+                    ),
                 )
-            )
             val response =
                 client.post("pending/quotes/promote") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuotes))
-            }
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuotes))
+                }
 
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(4, pendingQuoteRepository.getAllPendingQuotes().size)
             assertEquals(12, quoteRepository.getAllQuotes().size)
-    }
+        }
 
     @Test
     fun `promote post pending quote with malformed json`() =

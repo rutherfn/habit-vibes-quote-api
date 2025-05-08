@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 
 fun Application.configureRouting(
     quoteRepository: QuoteRepository,
-    pendingQuoteRepository: PendingQuoteRepository
+    pendingQuoteRepository: PendingQuoteRepository,
 ) {
     routing {
         install(StatusPages) {

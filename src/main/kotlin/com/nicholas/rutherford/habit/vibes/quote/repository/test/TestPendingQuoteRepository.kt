@@ -54,7 +54,7 @@ class TestPendingQuoteRepository(
 
     override suspend fun postQuote(quote: Quote) {
         if (getQuoteByTitle(title = quote.title) != null) {
-            throw IllegalStateException("Cannot duplicate pending quotes names!")
+            throw IllegalStateException("Cannot create duplicate pending quote titles!")
         }
         quotes.add(quote)
     }

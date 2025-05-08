@@ -137,7 +137,7 @@ fun Application.configureRouting(
             }
         }
 
-        get("pending//quotes/search/{title?}") {
+        get("pending/quotes/search/{title?}") {
             val title = call.parameters["title"]
             if (title != null) {
                 val quote = pendingQuoteRepository.getQuoteByTitle(title)

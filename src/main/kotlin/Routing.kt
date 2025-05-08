@@ -55,6 +55,7 @@ fun Application.configureRouting(
                 if (quotes.isEmpty()) {
                     call.respond(status = HttpStatusCode.NotFound, message = ErrorResponse("No quotes found"))
                 } else {
+                    println("here are the quotes $quotes")
                     call.respond(status = HttpStatusCode.OK, message = quotes)
                 }
             }
@@ -80,6 +81,7 @@ fun Application.configureRouting(
                 val quote = call.receive<Quote>()
                 quoteRepository.removeQuote(quote)
                 call.respond(quoteRepository.getAllQuotes())
+                println(quoteRepository.getAllQuotes())
             }
         }
 

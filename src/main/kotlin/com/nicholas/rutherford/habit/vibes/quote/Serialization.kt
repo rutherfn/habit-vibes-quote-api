@@ -1,4 +1,4 @@
-package com.nciholas.rutherford.habit.vibes.quote
+package com.nicholas.rutherford.habit.vibes.quote
 
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application

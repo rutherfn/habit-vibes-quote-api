@@ -1,4 +1,4 @@
-package com.nciholas.rutherford.habit.vibes.quote.model
+package com.nicholas.rutherford.habit.vibes.quote.model
 
 import kotlinx.serialization.Serializable
 

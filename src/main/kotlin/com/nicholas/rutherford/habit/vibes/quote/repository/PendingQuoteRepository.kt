@@ -1,6 +1,6 @@
-package com.nciholas.rutherford.habit.vibes.quote.repository
+package com.nicholas.rutherford.habit.vibes.quote.repository
 
-import com.nciholas.rutherford.habit.vibes.quote.model.Quote
+import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 
 interface PendingQuoteRepository {
     suspend fun getAllPendingQuotes(): List<Quote>

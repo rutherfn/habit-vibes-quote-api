@@ -1,7 +1,7 @@
-package com.nciholas.rutherford.habit.vibes.quote.repository.test
+package com.nicholas.rutherford.habit.vibes.quote.repository.test
 
-import com.nciholas.rutherford.habit.vibes.quote.model.Quote
-import com.nciholas.rutherford.habit.vibes.quote.repository.QuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.repository.QuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 
 class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRepository {
     private val quotes: MutableList<Quote> =

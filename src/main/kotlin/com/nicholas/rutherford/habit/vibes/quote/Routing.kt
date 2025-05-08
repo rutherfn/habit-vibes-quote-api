@@ -1,8 +1,8 @@
-package com.nciholas.rutherford.habit.vibes.quote
+package com.nicholas.rutherford.habit.vibes.quote
 
-import com.nciholas.rutherford.habit.vibes.quote.model.Quote
-import com.nciholas.rutherford.habit.vibes.quote.repository.PendingQuoteRepository
-import com.nciholas.rutherford.habit.vibes.quote.repository.QuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.model.Quote
+import com.nicholas.rutherford.habit.vibes.quote.repository.PendingQuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.repository.QuoteRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -73,7 +73,9 @@ fun Application.configureRouting(
                     }
                     call.respond(HttpStatusCode.Created)
                 } catch (ex: Exception) {
-                    call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Invalid request", ex.localizedMessage ?: ""))
+                    call.respond(status = HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid request", ex.localizedMessage ?: "")
+                    )
                 }
             }
 
@@ -122,7 +124,9 @@ fun Application.configureRouting(
                     }
                     call.respond(HttpStatusCode.Created)
                 } catch (ex: Exception) {
-                    call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Invalid request", ex.localizedMessage ?: ""))
+                    call.respond(status = HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid request", ex.localizedMessage ?: "")
+                    )
                 }
             }
 
@@ -160,7 +164,9 @@ fun Application.configureRouting(
                 }
                 call.respond(HttpStatusCode.Created)
             } catch (ex: Exception) {
-                call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Invalid request", ex.localizedMessage ?: ""))
+                call.respond(status = HttpStatusCode.BadRequest,
+                    ErrorResponse("Invalid request", ex.localizedMessage ?: "")
+                )
             }
         }
     }

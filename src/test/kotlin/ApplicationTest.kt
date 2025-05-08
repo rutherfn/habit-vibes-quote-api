@@ -1,8 +1,10 @@
 package com.nciholas.rutherford.habit.vibes.quote
 
-import com.nciholas.rutherford.habit.vibes.quote.model.Quote
-import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
-import com.nciholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.ErrorResponse
+import com.nicholas.rutherford.habit.vibes.quote.configureRouting
+import com.nicholas.rutherford.habit.vibes.quote.model.Quote
+import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post

@@ -1,7 +1,7 @@
-package com.nciholas.rutherford.habit.vibes.quote
+package com.nicholas.rutherford.habit.vibes.quote
 
-import com.nciholas.rutherford.habit.vibes.quote.model.Toggle
-import com.nciholas.rutherford.habit.vibes.quote.model.ToggleList
+import com.nicholas.rutherford.habit.vibes.quote.model.Toggle
+import com.nicholas.rutherford.habit.vibes.quote.model.ToggleList
 import kotlinx.serialization.json.Json
 import java.io.File
 

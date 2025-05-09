@@ -75,10 +75,11 @@ fun Application.configureRouting(
                 } catch (ex: Exception) {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = ErrorResponse(
-                            error = "Invalid request",
-                            details = ex.localizedMessage ?: ""
-                        )
+                        message =
+                            ErrorResponse(
+                                error = "Invalid request",
+                                details = ex.localizedMessage ?: "",
+                            ),
                     )
                 }
             }
@@ -130,10 +131,11 @@ fun Application.configureRouting(
                 } catch (ex: Exception) {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = ErrorResponse(
-                            error = "Invalid request",
-                            details = ex.localizedMessage ?: ""
-                        )
+                        message =
+                            ErrorResponse(
+                                error = "Invalid request",
+                                details = ex.localizedMessage ?: "",
+                            ),
                     )
                 }
             }
@@ -154,13 +156,13 @@ fun Application.configureRouting(
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,
-                        message = ErrorResponse(error = "Quote not found")
+                        message = ErrorResponse(error = "Quote not found"),
                     )
                 }
             } else {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = ErrorResponse(error = "Missing title")
+                    message = ErrorResponse(error = "Missing title"),
                 )
             }
         }
@@ -180,10 +182,11 @@ fun Application.configureRouting(
             } catch (ex: Exception) {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = ErrorResponse(
-                        error = "Invalid request",
-                        details = ex.localizedMessage ?: ""
-                    )
+                    message =
+                        ErrorResponse(
+                            error = "Invalid request",
+                            details = ex.localizedMessage ?: "",
+                        ),
                 )
             }
         }

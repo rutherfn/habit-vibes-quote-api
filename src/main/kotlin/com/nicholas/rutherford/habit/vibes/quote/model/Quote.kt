@@ -1,10 +1,11 @@
-package com.nciholas.rutherford.habit.vibes.quote.model
+package com.nicholas.rutherford.habit.vibes.quote.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Quote(
     val id: Int,
+    val title: String,
     val author: String,
     val source: String,
     val tags: List<String>,

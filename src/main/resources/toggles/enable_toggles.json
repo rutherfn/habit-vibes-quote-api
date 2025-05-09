@@ -1,0 +1,14 @@
+{
+  "toggles": [
+    {
+      "id": 1,
+      "enabled": true,
+      "name": "testDataEnabled"
+    },
+    {
+      "id": 2,
+      "enabled": false,
+      "name": "aiEnabled"
+    }
+  ]
+}

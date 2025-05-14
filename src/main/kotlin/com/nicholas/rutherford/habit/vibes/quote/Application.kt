@@ -1,5 +1,6 @@
 package com.nicholas.rutherford.habit.vibes.quote
 
+import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.PendingQuoteRepositoryImpl
 import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.QuoteRepositoryImpl
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
@@ -19,7 +20,11 @@ fun Application.module() {
     } else {
         QuoteRepositoryImpl()
     }
-    val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
+    val pendingQuoteRepository = if (testDataToggle.enabled) {
+        TestPendingQuoteRepository(quoteRepository = quoteRepository)
+    } else {
+        PendingQuoteRepositoryImpl()
+    }
 
     configureSerialization()
     configureDatabases()

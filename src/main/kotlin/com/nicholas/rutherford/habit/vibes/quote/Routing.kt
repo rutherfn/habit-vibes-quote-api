@@ -95,7 +95,7 @@ fun Application.configureRouting(
         }
 
         get("/quotes/search/{title?}") {
-            val title = call.parameters["title"]
+            val title = call.request.queryParameters["title"]
             if (title != null) {
                 val quote = quoteRepository.getQuoteByTitle(title)
                 if (quote != null) {
@@ -105,6 +105,16 @@ fun Application.configureRouting(
                 }
             } else {
                 call.respond(status = HttpStatusCode.BadRequest, ErrorResponse("Missing title"))
+            }
+        }
+
+        get("/quotes/random") {
+            val quote = quoteRepository.getRandomQuote()
+
+            if (quote != null) {
+                call.respond(quote)
+            } else {
+                call.respond(status = HttpStatusCode.NotFound, ErrorResponse("No quotes found"))
             }
         }
 

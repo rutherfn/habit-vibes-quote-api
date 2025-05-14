@@ -100,6 +100,8 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
 
     override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.title.equals(title, ignoreCase = true) }
 
+    override suspend fun getRandomQuote(): Quote? = quotes.random()
+
     override suspend fun getAllQuotes(): List<Quote> = quotes
 
     override suspend fun postQuote(quote: Quote) {

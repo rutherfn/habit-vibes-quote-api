@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.text.split
 
 class QuoteRepositoryImpl : QuoteRepository {
     override suspend fun getAllQuotes(): List<Quote> {
@@ -57,29 +56,54 @@ class QuoteRepositoryImpl : QuoteRepository {
 
     override suspend fun getQuoteByTitle(title: String): Quote? {
         return transaction {
-            val quoteRow = Quotes.select( Quotes.text.eq(title)).singleOrNull()
+            val cleanedTitle = title.trim().lowercase()
 
-            return@transaction quoteRow?.let {
-                Quote(
-                    id = it[Quotes.id],
-                    title = it[Quotes.text],
-                    author = it[Quotes.author],
-                    quoteSource = it[Quotes.quoteSource],
-                    tags = it[Quotes.tags].split(", "),
-                    createdAt = it[Quotes.createdAt],
-                    loggedBy = it[Quotes.loggedBy]
-                )
+            val quotes = Quotes
+                .selectAll() //todo -> Figure out a way we can just select what we need vs everything
+                .map {
+                    Quote(
+                        id = it[Quotes.id],
+                        title = it[Quotes.text],
+                        author = it[Quotes.author],
+                        quoteSource = it[Quotes.quoteSource],
+                        tags = it[Quotes.tags].split(", "),
+                        createdAt = it[Quotes.createdAt],
+                        loggedBy = it[Quotes.loggedBy]
+                    )
+                }
+
+            return@transaction quotes.firstOrNull { it.title.lowercase() == cleanedTitle }
+        }
+    }
+
+    override suspend fun getRandomQuote(): Quote? {
+        return transaction {
+            val quotes = Quotes
+                .selectAll() //todo -> Figure out a way we can just select what we need vs everything
+                .map {
+                    Quote(
+                        id = it[Quotes.id],
+                        title = it[Quotes.text],
+                        author = it[Quotes.author],
+                        quoteSource = it[Quotes.quoteSource],
+                        tags = it[Quotes.tags].split(", "),
+                        createdAt = it[Quotes.createdAt],
+                        loggedBy = it[Quotes.loggedBy]
+                    )
+                }
+
+            return@transaction if (quotes.isEmpty()) {
+                null
+            } else {
+                quotes.random()
             }
         }
     }
 
 
-
-
-
     override suspend fun removeQuote(quote: Quote) {
         transaction {
-            Quotes.deleteWhere { Quotes.id eq quote.id } // Deletes the quote by its id
+            Quotes.deleteWhere { Quotes.id eq quote.id }
         }
     }
 }

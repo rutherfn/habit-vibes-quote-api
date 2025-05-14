@@ -263,7 +263,7 @@ class RoutingTest {
             application { setup() }
             val title = pendingQuoteRepository.getAllPendingQuotes().first().quoteText
             val response =
-                client.get("pending//quotes/search/$title") {
+                client.get("pending/quotes/search/$title") {
                     headers {
                         append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
                     }

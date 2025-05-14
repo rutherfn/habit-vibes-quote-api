@@ -11,21 +11,24 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val isTestEnabled = JsonReader()
-        .readEnableToggles(path = "toggles/enable_toggles.json")
-        .first().enabled
+    val isTestEnabled =
+        JsonReader()
+            .readEnableToggles(path = "toggles/enable_toggles.json")
+            .first().enabled
 
-    val quoteRepository = if (isTestEnabled) {
-        TestQuoteRepository()
-    } else {
-        QuoteRepositoryImpl()
-    }
+    val quoteRepository =
+        if (isTestEnabled) {
+            TestQuoteRepository()
+        } else {
+            QuoteRepositoryImpl()
+        }
 
-    val pendingQuoteRepository = if (isTestEnabled) {
-        TestPendingQuoteRepository(quoteRepository = quoteRepository)
-    } else {
-        PendingQuoteRepositoryImpl(quoteRepository = quoteRepository)
-    }
+    val pendingQuoteRepository =
+        if (isTestEnabled) {
+            TestPendingQuoteRepository(quoteRepository = quoteRepository)
+        } else {
+            PendingQuoteRepositoryImpl(quoteRepository = quoteRepository)
+        }
 
     configureSerialization()
 
@@ -36,7 +39,6 @@ fun Application.module() {
 
     configureRouting(
         quoteRepository = quoteRepository,
-        pendingQuoteRepository = pendingQuoteRepository
+        pendingQuoteRepository = pendingQuoteRepository,
     )
 }
-

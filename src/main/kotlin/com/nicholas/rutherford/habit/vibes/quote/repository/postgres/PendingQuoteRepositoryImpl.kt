@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class PendingQuoteRepositoryImpl(
-    private val quoteRepository: QuoteRepository
+    private val quoteRepository: QuoteRepository,
 ) : PendingQuoteRepository {
     override suspend fun getAllPendingQuotes(): List<Quote> {
         return transaction {
@@ -24,7 +24,7 @@ class PendingQuoteRepositoryImpl(
                     quoteSource = it[PendingQuotes.quoteSource],
                     tags = it[PendingQuotes.tags].split(", "),
                     createdAt = it[PendingQuotes.createdAt],
-                    loggedBy = it[PendingQuotes.loggedBy]
+                    loggedBy = it[PendingQuotes.loggedBy],
                 )
             }
         }
@@ -62,19 +62,20 @@ class PendingQuoteRepositoryImpl(
         return transaction {
             val cleanedTitle = title.trim().lowercase()
 
-            val quotes = PendingQuotes
-                .selectAll() //todo -> Figure out a way we can just select what we need vs everything
-                .map {
-                    Quote(
-                        id = it[PendingQuotes.id],
-                        quoteText = it[PendingQuotes.quoteText],
-                        author = it[PendingQuotes.author],
-                        quoteSource = it[PendingQuotes.quoteSource],
-                        tags = it[PendingQuotes.tags].split(", "),
-                        createdAt = it[PendingQuotes.createdAt],
-                        loggedBy = it[PendingQuotes.loggedBy]
-                    )
-                }
+            val quotes =
+                PendingQuotes
+                    .selectAll() // todo -> Figure out a way we can just select what we need vs everything
+                    .map {
+                        Quote(
+                            id = it[PendingQuotes.id],
+                            quoteText = it[PendingQuotes.quoteText],
+                            author = it[PendingQuotes.author],
+                            quoteSource = it[PendingQuotes.quoteSource],
+                            tags = it[PendingQuotes.tags].split(", "),
+                            createdAt = it[PendingQuotes.createdAt],
+                            loggedBy = it[PendingQuotes.loggedBy],
+                        )
+                    }
 
             return@transaction quotes.firstOrNull { it.quoteText.lowercase() == cleanedTitle }
         }

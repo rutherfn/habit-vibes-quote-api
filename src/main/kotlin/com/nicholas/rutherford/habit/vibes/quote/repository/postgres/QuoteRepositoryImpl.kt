@@ -20,7 +20,7 @@ class QuoteRepositoryImpl : QuoteRepository {
                     quoteSource = it[Quotes.quoteSource],
                     tags = it[Quotes.tags].split(", "),
                     createdAt = it[Quotes.createdAt],
-                    loggedBy = it[Quotes.loggedBy]
+                    loggedBy = it[Quotes.loggedBy],
                 )
             }
         }
@@ -58,19 +58,20 @@ class QuoteRepositoryImpl : QuoteRepository {
         return transaction {
             val cleanedTitle = title.trim().lowercase()
 
-            val quotes = Quotes
-                .selectAll() //todo -> Figure out a way we can just select what we need vs everything
-                .map {
-                    Quote(
-                        id = it[Quotes.id],
-                        quoteText = it[Quotes.quoteText],
-                        author = it[Quotes.author],
-                        quoteSource = it[Quotes.quoteSource],
-                        tags = it[Quotes.tags].split(", "),
-                        createdAt = it[Quotes.createdAt],
-                        loggedBy = it[Quotes.loggedBy]
-                    )
-                }
+            val quotes =
+                Quotes
+                    .selectAll() // todo -> Figure out a way we can just select what we need vs everything
+                    .map {
+                        Quote(
+                            id = it[Quotes.id],
+                            quoteText = it[Quotes.quoteText],
+                            author = it[Quotes.author],
+                            quoteSource = it[Quotes.quoteSource],
+                            tags = it[Quotes.tags].split(", "),
+                            createdAt = it[Quotes.createdAt],
+                            loggedBy = it[Quotes.loggedBy],
+                        )
+                    }
 
             return@transaction quotes.firstOrNull { it.quoteText.lowercase() == cleanedTitle }
         }
@@ -78,19 +79,20 @@ class QuoteRepositoryImpl : QuoteRepository {
 
     override suspend fun getRandomQuote(): Quote? {
         return transaction {
-            val quotes = Quotes
-                .selectAll() //todo -> Figure out a way we can just select what we need vs everything
-                .map {
-                    Quote(
-                        id = it[Quotes.id],
-                        quoteText = it[Quotes.quoteText],
-                        author = it[Quotes.author],
-                        quoteSource = it[Quotes.quoteSource],
-                        tags = it[Quotes.tags].split(", "),
-                        createdAt = it[Quotes.createdAt],
-                        loggedBy = it[Quotes.loggedBy]
-                    )
-                }
+            val quotes =
+                Quotes
+                    .selectAll() // todo -> Figure out a way we can just select what we need vs everything
+                    .map {
+                        Quote(
+                            id = it[Quotes.id],
+                            quoteText = it[Quotes.quoteText],
+                            author = it[Quotes.author],
+                            quoteSource = it[Quotes.quoteSource],
+                            tags = it[Quotes.tags].split(", "),
+                            createdAt = it[Quotes.createdAt],
+                            loggedBy = it[Quotes.loggedBy],
+                        )
+                    }
 
             return@transaction if (quotes.isEmpty()) {
                 null
@@ -99,7 +101,6 @@ class QuoteRepositoryImpl : QuoteRepository {
             }
         }
     }
-
 
     override suspend fun removeQuote(quote: Quote) {
         transaction {

@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class Toggle(
     val id: Int,
     val enabled: Boolean,
-    val name: String
+    val name: String,
 )

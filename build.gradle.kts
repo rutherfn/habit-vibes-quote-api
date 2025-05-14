@@ -21,6 +21,10 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
+ktlint {
+    disabledRules.value(mutableListOf("no-wildcard-imports"))
+}
+
 dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.core)

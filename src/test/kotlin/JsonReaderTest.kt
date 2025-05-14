@@ -18,9 +18,9 @@ class JsonReaderTest {
             Toggle(
                 id = 1,
                 enabled = true,
-                name = "testDataEnabled"
+                name = "testDataEnabled",
             ),
-            toggles[0]
+            toggles[0],
         )
     }
 
@@ -40,6 +40,4 @@ class JsonReaderTest {
 
         assertEquals(0, toggles.size)
     }
-
-
 }

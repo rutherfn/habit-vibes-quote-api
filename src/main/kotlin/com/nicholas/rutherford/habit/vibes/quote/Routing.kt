@@ -3,16 +3,22 @@ package com.nicholas.rutherford.habit.vibes.quote
 import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 import com.nicholas.rutherford.habit.vibes.quote.repository.PendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.QuoteRepository
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.http.content.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.authenticate
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.ContentTransformationException
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.plugins.swagger.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.plugins.swagger.swaggerUI
+import io.ktor.server.request.receive
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 
 fun Application.configureRouting(
@@ -57,39 +63,39 @@ fun Application.configureRouting(
                 }
             }
 
-                authenticate("private-access") {
-                    post {
-                        val bodyText = call.receiveText()
+            authenticate("private-access") {
+                post {
+                    val bodyText = call.receiveText()
 
-                        try {
-                            if (bodyText.trim().startsWith(prefix = "[")) {
-                                val quotes = Json.decodeFromString<List<Quote>>(bodyText)
-                                quoteRepository.postQuotes(quotes)
-                            } else {
-                                val quote = Json.decodeFromString<Quote>(bodyText)
-                                quoteRepository.postQuote(quote)
-                            }
-                            call.respond(HttpStatusCode.Created)
-                        } catch (ex: Exception) {
-                            call.respond(
-                                status = HttpStatusCode.BadRequest,
-                                message =
-                                    ErrorResponse(
-                                        error = "Invalid request",
-                                        details = ex.localizedMessage ?: "",
-                                    ),
-                            )
+                    try {
+                        if (bodyText.trim().startsWith(prefix = "[")) {
+                            val quotes = Json.decodeFromString<List<Quote>>(bodyText)
+                            quoteRepository.postQuotes(quotes)
+                        } else {
+                            val quote = Json.decodeFromString<Quote>(bodyText)
+                            quoteRepository.postQuote(quote)
                         }
-                    }
-
-                    delete {
-                        val quote = call.receive<Quote>()
-                        quoteRepository.removeQuote(quote)
-                        call.respond(quoteRepository.getAllQuotes())
-                        println(quoteRepository.getAllQuotes())
+                        call.respond(HttpStatusCode.Created)
+                    } catch (ex: Exception) {
+                        call.respond(
+                            status = HttpStatusCode.BadRequest,
+                            message =
+                                ErrorResponse(
+                                    error = "Invalid request",
+                                    details = ex.localizedMessage ?: "",
+                                ),
+                        )
                     }
                 }
+
+                delete {
+                    val quote = call.receive<Quote>()
+                    quoteRepository.removeQuote(quote)
+                    call.respond(quoteRepository.getAllQuotes())
+                    println(quoteRepository.getAllQuotes())
+                }
             }
+        }
 
         authenticate("public-access") {
             get("/quotes/search/{title?}") {
@@ -117,55 +123,55 @@ fun Application.configureRouting(
                     call.respond(status = HttpStatusCode.NotFound, ErrorResponse("No quotes found"))
                 }
             }
+        }
+
+        route("/pending/quotes") {
+            authenticate("public-access") {
+                get {
+                    val quotes = pendingQuoteRepository.getAllPendingQuotes()
+                    if (quotes.isEmpty()) {
+                        call.respond(
+                            status = HttpStatusCode.NotFound,
+                            message = ErrorResponse("No pending quotes found"),
+                        )
+                    } else {
+                        call.respond(status = HttpStatusCode.OK, message = quotes)
+                    }
+                }
             }
 
-            route("/pending/quotes") {
-                authenticate("public-access") {
-                    get {
-                        val quotes = pendingQuoteRepository.getAllPendingQuotes()
-                        if (quotes.isEmpty()) {
-                            call.respond(
-                                status = HttpStatusCode.NotFound,
-                                message = ErrorResponse("No pending quotes found")
-                            )
+            authenticate("private-access") {
+                post {
+                    val bodyText = call.receiveText()
+
+                    try {
+                        if (bodyText.trim().startsWith(prefix = "[")) {
+                            val quotes = Json.decodeFromString<List<Quote>>(bodyText)
+                            pendingQuoteRepository.postQuotes(quotes)
                         } else {
-                            call.respond(status = HttpStatusCode.OK, message = quotes)
+                            val quote = Json.decodeFromString<Quote>(bodyText)
+                            pendingQuoteRepository.postQuote(quote)
                         }
+                        call.respond(HttpStatusCode.Created)
+                    } catch (ex: Exception) {
+                        call.respond(
+                            status = HttpStatusCode.BadRequest,
+                            message =
+                                ErrorResponse(
+                                    error = "Invalid request",
+                                    details = ex.localizedMessage ?: "",
+                                ),
+                        )
                     }
                 }
 
-                authenticate("private-access") {
-                    post {
-                        val bodyText = call.receiveText()
-
-                        try {
-                            if (bodyText.trim().startsWith(prefix = "[")) {
-                                val quotes = Json.decodeFromString<List<Quote>>(bodyText)
-                                pendingQuoteRepository.postQuotes(quotes)
-                            } else {
-                                val quote = Json.decodeFromString<Quote>(bodyText)
-                                pendingQuoteRepository.postQuote(quote)
-                            }
-                            call.respond(HttpStatusCode.Created)
-                        } catch (ex: Exception) {
-                            call.respond(
-                                status = HttpStatusCode.BadRequest,
-                                message =
-                                    ErrorResponse(
-                                        error = "Invalid request",
-                                        details = ex.localizedMessage ?: "",
-                                    ),
-                            )
-                        }
-                    }
-
-                    delete {
-                        val quote = call.receive<Quote>()
-                        pendingQuoteRepository.removeQuote(quote)
-                        call.respond(pendingQuoteRepository.getAllPendingQuotes())
-                    }
+                delete {
+                    val quote = call.receive<Quote>()
+                    pendingQuoteRepository.removeQuote(quote)
+                    call.respond(pendingQuoteRepository.getAllPendingQuotes())
                 }
             }
+        }
 
         authenticate("public-access") {
             get("pending/quotes/search/{title?}") {
@@ -189,31 +195,30 @@ fun Application.configureRouting(
             }
         }
 
+        authenticate("private-access") {
+            post("pending/quotes/promote") {
+                val bodyText = call.receiveText()
 
-            authenticate("private-access") {
-                post("pending/quotes/promote") {
-                    val bodyText = call.receiveText()
-
-                    try {
-                        if (bodyText.trim().startsWith(prefix = "[")) {
-                            val quotes = Json.decodeFromString<List<Quote>>(bodyText)
-                            pendingQuoteRepository.promoteQuotes(quotes = quotes)
-                        } else {
-                            val quote = Json.decodeFromString<Quote>(bodyText)
-                            pendingQuoteRepository.promoteQuote(quote = quote)
-                        }
-                        call.respond(HttpStatusCode.Created)
-                    } catch (ex: Exception) {
-                        call.respond(
-                            status = HttpStatusCode.BadRequest,
-                            message =
-                                ErrorResponse(
-                                    error = "Invalid request",
-                                    details = ex.localizedMessage ?: "",
-                                ),
-                        )
+                try {
+                    if (bodyText.trim().startsWith(prefix = "[")) {
+                        val quotes = Json.decodeFromString<List<Quote>>(bodyText)
+                        pendingQuoteRepository.promoteQuotes(quotes = quotes)
+                    } else {
+                        val quote = Json.decodeFromString<Quote>(bodyText)
+                        pendingQuoteRepository.promoteQuote(quote = quote)
                     }
+                    call.respond(HttpStatusCode.Created)
+                } catch (ex: Exception) {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message =
+                            ErrorResponse(
+                                error = "Invalid request",
+                                details = ex.localizedMessage ?: "",
+                            ),
+                    )
                 }
             }
         }
+    }
 }

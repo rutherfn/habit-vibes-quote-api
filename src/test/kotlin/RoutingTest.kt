@@ -39,11 +39,12 @@ class RoutingTest {
     fun `get quotes`() =
         testApplication {
             application { setup() }
-            val response = client.get("/quotes") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.OK, response.status)
             val quotes = json.decodeFromString<List<Quote>>(response.bodyAsText())
             assertEquals(10, quotes.size)
@@ -53,11 +54,12 @@ class RoutingTest {
     fun `get pending quotes`() =
         testApplication {
             application { setup() }
-            val response = client.get("/pending/quotes") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/pending/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.OK, response.status)
             val quotes = json.decodeFromString<List<Quote>>(response.bodyAsText())
             assertEquals(4, quotes.size)
@@ -76,11 +78,12 @@ class RoutingTest {
                     pendingQuoteRepository = pendingQuoteRepository,
                 )
             }
-            val response = client.get("/quotes") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("No quotes found", error.error)
@@ -101,11 +104,12 @@ class RoutingTest {
                         ),
                 )
             }
-            val response = client.get("/pending/quotes") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/pending/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("No pending quotes found", error.error)
@@ -116,13 +120,14 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val newQuote = Quote(11, "Stay hungry", "Steve Jobs", "Speech", listOf("motivation"), "2025-04-27T11:00:00Z", "user999")
-            val response = client.post("/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuote))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuote))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(11, quoteRepository.getAllQuotes().size)
         }
@@ -132,13 +137,14 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val newQuote = Quote(11, "Stay hungry", "Steve Jobs", "Speech", listOf("motivation"), "2025-04-27T11:00:00Z", "user999")
-            val response = client.post("/pending/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuote))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("/pending/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuote))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(5, pendingQuoteRepository.getAllPendingQuotes().size)
         }
@@ -152,13 +158,14 @@ class RoutingTest {
                     Quote(12, "Quote 1", "Author A", "Source A", listOf("tag1"), "2025-05-01T10:00:00Z", "user1"),
                     Quote(13, "Quote 2", "Author B", "Source B", listOf("tag2"), "2025-05-02T10:00:00Z", "user2"),
                 )
-            val response = client.post("/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuotes))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuotes))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(12, quoteRepository.getAllQuotes().size)
         }
@@ -172,13 +179,14 @@ class RoutingTest {
                     Quote(12, "Quote 1", "Author A", "Source A", listOf("tag1"), "2025-05-01T10:00:00Z", "user1"),
                     Quote(13, "Quote 2", "Author B", "Source B", listOf("tag2"), "2025-05-02T10:00:00Z", "user2"),
                 )
-            val response = client.post("/pending/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuotes))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("/pending/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuotes))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(6, pendingQuoteRepository.getAllPendingQuotes().size)
         }
@@ -188,13 +196,14 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
-            val response = client.post("/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(malformedJson)
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(malformedJson)
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }
 
@@ -203,13 +212,14 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
-            val response = client.post("/pending/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(malformedJson)
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("/pending/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(malformedJson)
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }
 
@@ -218,13 +228,14 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val quoteToDelete = quoteRepository.getAllQuotes().first()
-            val response = client.delete("/quotes") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(quoteToDelete))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.delete("/quotes") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(quoteToDelete))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.OK, response.status)
             val remaining = json.decodeFromString<List<Quote>>(response.bodyAsText())
             assertEquals(9, remaining.size)
@@ -235,11 +246,12 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val title = quoteRepository.getAllQuotes().first().quoteText
-            val response = client.get("/quotes/search/$title") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/quotes/search/$title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.OK, response.status)
             val quote = json.decodeFromString<Quote>(response.bodyAsText())
             assertEquals(title, quote.quoteText)
@@ -250,11 +262,12 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val title = pendingQuoteRepository.getAllPendingQuotes().first().quoteText
-            val response = client.get("pending//quotes/search/$title") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("pending//quotes/search/$title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.OK, response.status)
             val quote = json.decodeFromString<Quote>(response.bodyAsText())
             assertEquals(title, quote.quoteText)
@@ -264,11 +277,12 @@ class RoutingTest {
     fun `get quote by title not found`() =
         testApplication {
             application { setup() }
-            val response = client.get("/quotes/search/nonexistent-title") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/quotes/search/nonexistent-title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Quote not found", error.error)
@@ -278,11 +292,12 @@ class RoutingTest {
     fun `get pending quote by title not found`() =
         testApplication {
             application { setup() }
-            val response = client.get("/pending/quotes/search/nonexistent-title") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/pending/quotes/search/nonexistent-title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Quote not found", error.error)
@@ -292,11 +307,12 @@ class RoutingTest {
     fun `get quote by title when title is null`() =
         testApplication {
             application { setup() }
-            val response = client.get("/quotes/search/") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/quotes/search/") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.BadRequest, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Missing title", error.error)
@@ -306,11 +322,12 @@ class RoutingTest {
     fun `get pending quote by title when title is null`() =
         testApplication {
             application { setup() }
-            val response = client.get("/pending/quotes/search/") {
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+            val response =
+                client.get("/pending/quotes/search/") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.BadRequest, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Missing title", error.error)
@@ -331,13 +348,14 @@ class RoutingTest {
                     loggedBy = "user123",
                 )
 
-            val response = client.post("pending/quotes/promote") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuote))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("pending/quotes/promote") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuote))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
 
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(4, pendingQuoteRepository.getAllPendingQuotes().size)
@@ -369,13 +387,14 @@ class RoutingTest {
                         loggedBy = "user456",
                     ),
                 )
-            val response = client.post("pending/quotes/promote") {
-                contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(newQuotes))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("pending/quotes/promote") {
+                    contentType(ContentType.Application.Json)
+                    setBody(json.encodeToString(newQuotes))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
 
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(4, pendingQuoteRepository.getAllPendingQuotes().size)
@@ -387,13 +406,14 @@ class RoutingTest {
         testApplication {
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
-            val response = client.post("pending/quotes/promote") {
-                contentType(ContentType.Application.Json)
-                setBody(malformedJson)
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+            val response =
+                client.post("pending/quotes/promote") {
+                    contentType(ContentType.Application.Json)
+                    setBody(malformedJson)
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
-            }
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }
 }

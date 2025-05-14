@@ -8,12 +8,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureDatabases() {
     val dotenv = dotenv()
-    val db = Database.connect(
-        url = dotenv["DB_URL"],
-        driver = dotenv["DB_DRIVER"],
-        user = dotenv["DB_USER"],
-        password = dotenv["DB_PASSWORD"]
-    )
+    val db =
+        Database.connect(
+            url = dotenv["DB_URL"],
+            driver = dotenv["DB_DRIVER"],
+            user = dotenv["DB_USER"],
+            password = dotenv["DB_PASSWORD"],
+        )
 
     checkForDbConnection(db = db)
 }

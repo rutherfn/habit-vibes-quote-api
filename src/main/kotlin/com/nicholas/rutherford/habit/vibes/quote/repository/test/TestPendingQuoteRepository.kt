@@ -21,7 +21,7 @@ class TestPendingQuoteRepository(
             ),
             Quote(
                 id = 2,
-                quoteText  = "Don't watch the clock; do what it does. Keep going.",
+                quoteText = "Don't watch the clock; do what it does. Keep going.",
                 author = "Sam Levenson",
                 quoteSource = "Book",
                 tags = listOf("time", "motivation", "persistence"),
@@ -53,7 +53,7 @@ class TestPendingQuoteRepository(
     override suspend fun getAllPendingQuotes(): List<Quote> = quotes
 
     override suspend fun postQuote(quote: Quote) {
-        if (getQuoteByTitle(title = quote.quoteText ) != null) {
+        if (getQuoteByTitle(title = quote.quoteText) != null) {
             throw IllegalStateException("Cannot create duplicate pending quote titles!")
         }
         quotes.add(quote)

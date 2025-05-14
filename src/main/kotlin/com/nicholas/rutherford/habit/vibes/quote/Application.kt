@@ -11,22 +11,31 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val jsonPath = "toggles/enable_toggles.json"
-    val jsonReader = JsonReader()
-    val testDataToggle = jsonReader.readEnableToggles(path = jsonPath).first()
+    val isTestEnabled = JsonReader()
+        .readEnableToggles(path = "toggles/enable_toggles.json")
+        .first().enabled
 
-    val quoteRepository = if (testDataToggle.enabled) {
+    val quoteRepository = if (isTestEnabled) {
         TestQuoteRepository()
     } else {
         QuoteRepositoryImpl()
     }
-    val pendingQuoteRepository = if (testDataToggle.enabled) {
+
+    val pendingQuoteRepository = if (isTestEnabled) {
         TestPendingQuoteRepository(quoteRepository = quoteRepository)
     } else {
         PendingQuoteRepositoryImpl(quoteRepository = quoteRepository)
     }
 
     configureSerialization()
-    configureDatabases()
-    configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
+
+    if (!isTestEnabled) {
+        configureDatabases()
+    }
+
+    configureRouting(
+        quoteRepository = quoteRepository,
+        pendingQuoteRepository = pendingQuoteRepository
+    )
 }
+

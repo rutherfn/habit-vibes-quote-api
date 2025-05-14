@@ -1,7 +1,6 @@
 package com.nicholas.rutherford.habit.vibes.quote.repository.postgres
 
 import com.nicholas.rutherford.habit.vibes.quote.PendingQuotes
-import com.nicholas.rutherford.habit.vibes.quote.Quotes
 import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 import com.nicholas.rutherford.habit.vibes.quote.repository.PendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.QuoteRepository

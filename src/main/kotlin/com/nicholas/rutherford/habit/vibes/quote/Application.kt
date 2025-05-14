@@ -1,5 +1,6 @@
 package com.nicholas.rutherford.habit.vibes.quote
 
+import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.QuoteRepositoryImpl
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.server.application.Application
@@ -9,13 +10,16 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val quoteRepository = TestQuoteRepository()
-    val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
+    val jsonPath = "toggles/enable_toggles.json"
     val jsonReader = JsonReader()
-    val test = jsonReader.readEnableToggles(path = "toggles/enable_toggles.json")
+    val testDataToggle = jsonReader.readEnableToggles(path = jsonPath).first()
 
-    println("here we go test $test")
-    // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
+    val quoteRepository = if (testDataToggle.enabled) {
+        TestQuoteRepository()
+    } else {
+        QuoteRepositoryImpl()
+    }
+    val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
 
     configureSerialization()
     configureDatabases()

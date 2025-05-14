@@ -33,7 +33,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
-    implementation(libs.exposed.javatime)
+    implementation(libs.dotenv.kotlin)
     implementation(libs.exposed.jdbc)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)

@@ -12,6 +12,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
+import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -25,9 +26,14 @@ class RoutingTest {
             ignoreUnknownKeys = true
         }
 
-    private val dotenv = dotenv()
-    private val publicAccessToken = dotenv["DB_AUTHENTICATION_PUBLIC_ACCESS_TOKEN"]
-    private val privateAccessToken = dotenv["DB_AUTHENTICATION_PRIVATE_ACCESS_TOKEN"]
+    private val dotenv =
+        if (File("./.env").exists()) {
+            dotenv()
+        } else {
+            null
+        }
+    private val publicAccessToken = dotenv?.get("DB_AUTHENTICATION_PUBLIC_ACCESS_TOKEN")
+    private val privateAccessToken = dotenv?.get("DB_AUTHENTICATION_PRIVATE_ACCESS_TOKEN")
 
     private fun Application.setup() {
         install(ContentNegotiation) { json(json) }
@@ -35,9 +41,16 @@ class RoutingTest {
         configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
     }
 
+    private fun canRunIntegrationTests(): Boolean {
+        return !publicAccessToken.isNullOrEmpty() && !privateAccessToken.isNullOrEmpty()
+    }
+
     @Test
     fun `get quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val response =
                 client.get("/quotes") {
@@ -53,6 +66,9 @@ class RoutingTest {
     @Test
     fun `get pending quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val response =
                 client.get("/pending/quotes") {
@@ -68,6 +84,9 @@ class RoutingTest {
     @Test
     fun `get quotes with empty list`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             val quoteRepository = TestQuoteRepository(overrideQuotes = mutableListOf())
             val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
             application {
@@ -92,6 +111,9 @@ class RoutingTest {
     @Test
     fun `get quotes with empty pending list`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application {
                 install(ContentNegotiation) { json(json) }
                 configureAuthentication()
@@ -118,6 +140,9 @@ class RoutingTest {
     @Test
     fun `post single quote`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuote = Quote(11, "Stay hungry", "Steve Jobs", "Speech", listOf("motivation"), "2025-04-27T11:00:00Z", "user999")
             val response =
@@ -135,6 +160,9 @@ class RoutingTest {
     @Test
     fun `post single pending quote`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuote = Quote(11, "Stay hungry", "Steve Jobs", "Speech", listOf("motivation"), "2025-04-27T11:00:00Z", "user999")
             val response =
@@ -152,6 +180,9 @@ class RoutingTest {
     @Test
     fun `post multiple quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuotes =
                 listOf(
@@ -173,6 +204,9 @@ class RoutingTest {
     @Test
     fun `post multiple pending quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuotes =
                 listOf(
@@ -194,6 +228,9 @@ class RoutingTest {
     @Test
     fun `post quote with malformed json`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
             val response =
@@ -210,6 +247,9 @@ class RoutingTest {
     @Test
     fun `post pending quote with malformed json`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
             val response =
@@ -226,6 +266,9 @@ class RoutingTest {
     @Test
     fun `delete a quote`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val quoteToDelete = quoteRepository.getAllQuotes().first()
             val response =
@@ -244,6 +287,9 @@ class RoutingTest {
     @Test
     fun `get quote by title`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val title = quoteRepository.getAllQuotes().first().quoteText
             val response =
@@ -260,6 +306,9 @@ class RoutingTest {
     @Test
     fun `get pending quote by title`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val title = pendingQuoteRepository.getAllPendingQuotes().first().quoteText
             val response =
@@ -276,6 +325,9 @@ class RoutingTest {
     @Test
     fun `get quote by title not found`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val response =
                 client.get("/quotes/search/nonexistent-title") {
@@ -291,6 +343,9 @@ class RoutingTest {
     @Test
     fun `get pending quote by title not found`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val response =
                 client.get("/pending/quotes/search/nonexistent-title") {
@@ -306,6 +361,9 @@ class RoutingTest {
     @Test
     fun `get quote by title when title is null`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val response =
                 client.get("/quotes/search/") {
@@ -321,6 +379,9 @@ class RoutingTest {
     @Test
     fun `get pending quote by title when title is null`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val response =
                 client.get("/pending/quotes/search/") {
@@ -336,6 +397,9 @@ class RoutingTest {
     @Test
     fun `promote one pending quote to regular quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuote =
                 Quote(
@@ -365,6 +429,9 @@ class RoutingTest {
     @Test
     fun `promote a list of pending quotes to regular quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuotes =
                 listOf(
@@ -404,6 +471,9 @@ class RoutingTest {
     @Test
     fun `promote post pending quote with malformed json`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
             val response =

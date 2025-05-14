@@ -32,6 +32,7 @@ fun Application.module() {
     if (!isTestEnabled) {
         configureDatabases()
     }
+    configureAuthentication()
 
     configureRouting(
         quoteRepository = quoteRepository,

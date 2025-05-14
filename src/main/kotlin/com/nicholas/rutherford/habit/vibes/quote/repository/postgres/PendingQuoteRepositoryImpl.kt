@@ -83,7 +83,7 @@ class PendingQuoteRepositoryImpl(
 
     override suspend fun removeQuote(quote: Quote) {
         transaction {
-            PendingQuotes.deleteWhere { Quotes.id eq quote.id }
+            PendingQuotes.deleteWhere { PendingQuotes.id eq quote.id }
         }
     }
 

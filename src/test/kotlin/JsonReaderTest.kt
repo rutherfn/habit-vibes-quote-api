@@ -1,6 +1,5 @@
-package com.nciholas.rutherford.habit.vibes.quote
+package com.nicholas.rutherford.habit.vibes.quote
 
-import com.nicholas.rutherford.habit.vibes.quote.JsonReader
 import com.nicholas.rutherford.habit.vibes.quote.model.Toggle
 import kotlin.test.Test
 import kotlin.test.assertEquals

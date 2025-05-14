@@ -1,8 +1,5 @@
-package com.nciholas.rutherford.habit.vibes.quote
+package com.nicholas.rutherford.habit.vibes.quote
 
-import com.nicholas.rutherford.habit.vibes.quote.ErrorResponse
-import com.nicholas.rutherford.habit.vibes.quote.configureAuthentication
-import com.nicholas.rutherford.habit.vibes.quote.configureRouting
 import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
@@ -18,7 +15,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ApplicationTest {
+class RoutingTest {
     private val quoteRepository = TestQuoteRepository()
     private val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
 

@@ -11,8 +11,10 @@ postgres-version = "42.7.5"
 ktor-server-swagger-version = "2.3.4"
 serialization-json-version = "1.6.2"
 jayway-jsonpath-version = "2.9.0"
+ktor-server-auth-version = "3.1.2"
 
 [libraries]
+ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor-server-auth-version" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
 ktor-server-host-common = { module = "io.ktor:ktor-server-host-common", version.ref = "ktor-version" }
 ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor-version" }

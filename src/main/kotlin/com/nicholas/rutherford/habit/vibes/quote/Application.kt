@@ -11,6 +11,10 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val quoteRepository = TestQuoteRepository()
     val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
+    val jsonReader = JsonReader()
+    val test = jsonReader.readEnableToggles(path = "toggles/enable_toggles.json")
+
+    println("here we go test $test")
     // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
 
     configureSerialization()

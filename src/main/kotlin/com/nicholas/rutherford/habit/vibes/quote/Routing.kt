@@ -19,11 +19,43 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureRouting(
     quoteRepository: QuoteRepository,
     pendingQuoteRepository: PendingQuoteRepository,
 ) {
+    fun getAllQuotes(): List<Quote> {
+        return transaction {
+            val pendingQuotes = PendingQuotes.selectAll().map {
+                Quote(
+                    id = it[PendingQuotes.id],
+                    title = it[PendingQuotes.text],
+                    author = it[PendingQuotes.author],
+                    quoteSource = it[PendingQuotes.quoteSource],
+                    tags = it[PendingQuotes.tags].split(", "),
+                    createdAt = it[PendingQuotes.createdAt],
+                    loggedBy = it[PendingQuotes.loggedBy]
+                )
+            }
+
+            val regularQuotes = Quotes.selectAll().map {
+                Quote(
+                    id = it[Quotes.id],
+                    title = it[Quotes.text],
+                    author = it[Quotes.author],
+                    quoteSource = it[Quotes.quoteSource],
+                    tags = it[Quotes.tags].split(", "),
+                    createdAt = it[Quotes.createdAt],
+                    loggedBy = it[Quotes.loggedBy]
+                )
+            }
+
+            // Combine both lists
+            return@transaction regularQuotes + pendingQuotes
+        }
+    }
     routing {
         install(StatusPages) {
             exception<ContentTransformationException> { call, cause ->
@@ -58,6 +90,10 @@ fun Application.configureRouting(
                     println("here are the quotes $quotes")
                     call.respond(status = HttpStatusCode.OK, message = quotes)
                 }
+
+                val test = getAllQuotes()
+
+                println("here is the test $test")
             }
 
             post {

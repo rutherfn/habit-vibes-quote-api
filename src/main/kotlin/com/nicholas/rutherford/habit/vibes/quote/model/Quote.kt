@@ -7,7 +7,7 @@ data class Quote(
     val id: Int,
     val title: String,
     val author: String,
-    val source: String,
+    val quoteSource: String,
     val tags: List<String>,
     val createdAt: String,
     val loggedBy: String?,

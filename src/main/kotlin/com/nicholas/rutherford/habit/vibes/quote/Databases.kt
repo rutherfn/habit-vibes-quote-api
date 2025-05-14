@@ -2,6 +2,7 @@ package com.nicholas.rutherford.habit.vibes.quote
 
 import io.ktor.server.application.Application
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.sql.DriverManager
@@ -9,9 +10,10 @@ import java.sql.DriverManager
 fun Application.configureDatabases() {
     val db =
         Database.connect(
-            "jdbc:postgresql://localhost:5432/ktor_tutorial_db",
-            user = "postgresql",
-            password = "password",
+            url = "jdbc:postgresql://localhost:5432/habit_vibes_quotes",
+            driver = "org.postgresql.Driver",
+            user = "postgres",
+            password = "mr.cool12"
         )
 
     checkForDbConnection(db = db)
@@ -23,6 +25,9 @@ private fun checkForDbConnection(db: Database) {
             exec("SELECT 1") { rs ->
                 if (rs?.next() == true) {
                     println("Database connected successfully.")
+                    transaction {
+                        SchemaUtils.create(PendingQuotes, Quotes)
+                    }
                 } else {
                     println("Database connection check failed.")
                 }

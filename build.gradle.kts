@@ -32,6 +32,8 @@ dependencies {
     implementation(libs.swagger)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
+    implementation(libs.exposed.javatime)
     implementation(libs.exposed.jdbc)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)

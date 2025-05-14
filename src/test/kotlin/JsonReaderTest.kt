@@ -36,7 +36,7 @@ class JsonReaderTest {
     @Test
     fun `readEnableToggles should handle malformed json`() {
         val path = "toggles/malformed_enable_toggles.json"
-        val toggles = reader.readEnableToggles("toggles/malformed.json")
+        val toggles = reader.readEnableToggles(path)
 
         assertEquals(0, toggles.size)
     }

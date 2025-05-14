@@ -205,22 +205,22 @@ class ApplicationTest {
     fun `get quote by title`() =
         testApplication {
             application { setup() }
-            val title = quoteRepository.getAllQuotes().first().title
+            val title = quoteRepository.getAllQuotes().first().quoteText
             val response = client.get("/quotes/search/$title")
             assertEquals(HttpStatusCode.OK, response.status)
             val quote = json.decodeFromString<Quote>(response.bodyAsText())
-            assertEquals(title, quote.title)
+            assertEquals(title, quote.quoteText)
         }
 
     @Test
     fun `get pending quote by title`() =
         testApplication {
             application { setup() }
-            val title = pendingQuoteRepository.getAllPendingQuotes().first().title
+            val title = pendingQuoteRepository.getAllPendingQuotes().first().quoteText
             val response = client.get("pending//quotes/search/$title")
             assertEquals(HttpStatusCode.OK, response.status)
             val quote = json.decodeFromString<Quote>(response.bodyAsText())
-            assertEquals(title, quote.title)
+            assertEquals(title, quote.quoteText)
         }
 
     @Test
@@ -270,7 +270,7 @@ class ApplicationTest {
             val newQuote =
                 Quote(
                     id = 21,
-                    title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                    quoteText = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
                     author = "Ralph Waldo Emerson",
                     quoteSource = "Essay",
                     tags = listOf("strength", "character", "potential"),
@@ -297,7 +297,7 @@ class ApplicationTest {
                 listOf(
                     Quote(
                         id = 21,
-                        title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                        quoteText = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
                         author = "Ralph Waldo Emerson",
                         quoteSource = "Essay",
                         tags = listOf("strength", "character", "potential"),
@@ -306,7 +306,7 @@ class ApplicationTest {
                     ),
                     Quote(
                         id = 22,
-                        title = "Act as if what you do makes a difference. It does.",
+                        quoteText = "Act as if what you do makes a difference. It does.",
                         author = "William James",
                         quoteSource = "Lecture",
                         tags = listOf("impact", "life", "action"),

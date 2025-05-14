@@ -15,7 +15,7 @@ class QuoteRepositoryImpl : QuoteRepository {
             return@transaction Quotes.selectAll().map {
                 Quote(
                     id = it[Quotes.id],
-                    title = it[Quotes.text],
+                    quoteText = it[Quotes.quoteText],
                     author = it[Quotes.author],
                     quoteSource = it[Quotes.quoteSource],
                     tags = it[Quotes.tags].split(", "),
@@ -29,7 +29,7 @@ class QuoteRepositoryImpl : QuoteRepository {
     override suspend fun postQuote(quote: Quote) {
         transaction {
             Quotes.insert {
-                it[text] = quote.title
+                it[quoteText] = quote.quoteText
                 it[author] = quote.author
                 it[quoteSource] = quote.quoteSource
                 it[tags] = quote.tags.joinToString(", ")
@@ -43,7 +43,7 @@ class QuoteRepositoryImpl : QuoteRepository {
         transaction {
             quotes.forEach { quote ->
                 Quotes.insert {
-                    it[text] = quote.title
+                    it[quoteText] = quote.quoteText
                     it[author] = quote.author
                     it[quoteSource] = quote.quoteSource
                     it[tags] = quote.tags.joinToString(", ")
@@ -63,7 +63,7 @@ class QuoteRepositoryImpl : QuoteRepository {
                 .map {
                     Quote(
                         id = it[Quotes.id],
-                        title = it[Quotes.text],
+                        quoteText = it[Quotes.quoteText],
                         author = it[Quotes.author],
                         quoteSource = it[Quotes.quoteSource],
                         tags = it[Quotes.tags].split(", "),
@@ -72,7 +72,7 @@ class QuoteRepositoryImpl : QuoteRepository {
                     )
                 }
 
-            return@transaction quotes.firstOrNull { it.title.lowercase() == cleanedTitle }
+            return@transaction quotes.firstOrNull { it.quoteText.lowercase() == cleanedTitle }
         }
     }
 
@@ -83,7 +83,7 @@ class QuoteRepositoryImpl : QuoteRepository {
                 .map {
                     Quote(
                         id = it[Quotes.id],
-                        title = it[Quotes.text],
+                        quoteText = it[Quotes.quoteText],
                         author = it[Quotes.author],
                         quoteSource = it[Quotes.quoteSource],
                         tags = it[Quotes.tags].split(", "),

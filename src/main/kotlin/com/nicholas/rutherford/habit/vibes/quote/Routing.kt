@@ -131,11 +131,14 @@ fun Application.configureRouting(
             post {
                 val bodyText = call.receiveText()
 
+                println("here is the body text $bodyText")
+
                 try {
                     if (bodyText.trim().startsWith(prefix = "[")) {
                         val quotes = Json.decodeFromString<List<Quote>>(bodyText)
                         pendingQuoteRepository.postQuotes(quotes)
                     } else {
+                        println("get here test")
                         val quote = Json.decodeFromString<Quote>(bodyText)
                         pendingQuoteRepository.postQuote(quote)
                     }
@@ -182,12 +185,15 @@ fun Application.configureRouting(
         post("pending/quotes/promote") {
             val bodyText = call.receiveText()
 
+            println("here is that body text $bodyText")
+
             try {
                 if (bodyText.trim().startsWith(prefix = "[")) {
                     val quotes = Json.decodeFromString<List<Quote>>(bodyText)
                     pendingQuoteRepository.promoteQuotes(quotes = quotes)
                 } else {
                     val quote = Json.decodeFromString<Quote>(bodyText)
+                    println("get here test")
                     pendingQuoteRepository.promoteQuote(quote = quote)
                 }
                 call.respond(HttpStatusCode.Created)

@@ -12,7 +12,7 @@ class TestPendingQuoteRepository(
         overrideQuotes ?: mutableListOf(
             Quote(
                 id = 1,
-                title = "Great things are not done by impulse, but by a series of small things brought together.",
+                quoteText = "Great things are not done by impulse, but by a series of small things brought together.",
                 author = "Vincent Van Gogh",
                 quoteSource = "Letter",
                 tags = listOf("patience", "creativity", "effort"),
@@ -21,7 +21,7 @@ class TestPendingQuoteRepository(
             ),
             Quote(
                 id = 2,
-                title = "Don't watch the clock; do what it does. Keep going.",
+                quoteText  = "Don't watch the clock; do what it does. Keep going.",
                 author = "Sam Levenson",
                 quoteSource = "Book",
                 tags = listOf("time", "motivation", "persistence"),
@@ -30,7 +30,7 @@ class TestPendingQuoteRepository(
             ),
             Quote(
                 id = 3,
-                title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                quoteText = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
                 author = "Ralph Waldo Emerson",
                 quoteSource = "Essay",
                 tags = listOf("strength", "character", "potential"),
@@ -39,7 +39,7 @@ class TestPendingQuoteRepository(
             ),
             Quote(
                 id = 4,
-                title = "Act as if what you do makes a difference. It does.",
+                quoteText = "Act as if what you do makes a difference. It does.",
                 author = "William James",
                 quoteSource = "Lecture",
                 tags = listOf("impact", "life", "action"),
@@ -48,12 +48,12 @@ class TestPendingQuoteRepository(
             ),
         )
 
-    override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.title.equals(title, ignoreCase = true) }
+    override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.quoteText.equals(title, ignoreCase = true) }
 
     override suspend fun getAllPendingQuotes(): List<Quote> = quotes
 
     override suspend fun postQuote(quote: Quote) {
-        if (getQuoteByTitle(title = quote.title) != null) {
+        if (getQuoteByTitle(title = quote.quoteText ) != null) {
             throw IllegalStateException("Cannot create duplicate pending quote titles!")
         }
         quotes.add(quote)
@@ -63,7 +63,7 @@ class TestPendingQuoteRepository(
         val quotesToAddArrayList: ArrayList<Quote> = arrayListOf()
 
         quotesList.forEach { quote ->
-            if (getQuoteByTitle(title = quote.title) == null) {
+            if (getQuoteByTitle(title = quote.quoteText) == null) {
                 quotesToAddArrayList.add(quote)
             } else {
                 println("Cannot add pending quote $quote since it already exists")

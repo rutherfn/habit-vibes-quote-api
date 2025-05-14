@@ -23,7 +23,7 @@ fun Application.module() {
     val pendingQuoteRepository = if (testDataToggle.enabled) {
         TestPendingQuoteRepository(quoteRepository = quoteRepository)
     } else {
-        PendingQuoteRepositoryImpl()
+        PendingQuoteRepositoryImpl(quoteRepository = quoteRepository)
     }
 
     configureSerialization()

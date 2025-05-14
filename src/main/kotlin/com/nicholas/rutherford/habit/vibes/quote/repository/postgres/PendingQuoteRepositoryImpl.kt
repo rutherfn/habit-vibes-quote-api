@@ -4,19 +4,22 @@ import com.nicholas.rutherford.habit.vibes.quote.PendingQuotes
 import com.nicholas.rutherford.habit.vibes.quote.Quotes
 import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 import com.nicholas.rutherford.habit.vibes.quote.repository.PendingQuoteRepository
+import com.nicholas.rutherford.habit.vibes.quote.repository.QuoteRepository
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class PendingQuoteRepositoryImpl : PendingQuoteRepository {
+class PendingQuoteRepositoryImpl(
+    private val quoteRepository: QuoteRepository
+) : PendingQuoteRepository {
     override suspend fun getAllPendingQuotes(): List<Quote> {
         return transaction {
             return@transaction PendingQuotes.selectAll().map {
                 Quote(
                     id = it[PendingQuotes.id],
-                    title = it[PendingQuotes.text],
+                    quoteText = it[PendingQuotes.quoteText],
                     author = it[PendingQuotes.author],
                     quoteSource = it[PendingQuotes.quoteSource],
                     tags = it[PendingQuotes.tags].split(", "),
@@ -30,7 +33,7 @@ class PendingQuoteRepositoryImpl : PendingQuoteRepository {
     override suspend fun postQuote(quote: Quote) {
         transaction {
             PendingQuotes.insert {
-                it[text] = quote.title
+                it[quoteText] = quote.quoteText
                 it[author] = quote.author
                 it[quoteSource] = quote.quoteSource
                 it[tags] = quote.tags.joinToString(", ")
@@ -44,7 +47,7 @@ class PendingQuoteRepositoryImpl : PendingQuoteRepository {
         transaction {
             quotes.forEach { quote ->
                 PendingQuotes.insert {
-                    it[text] = quote.title
+                    it[quoteText] = quote.quoteText
                     it[author] = quote.author
                     it[quoteSource] = quote.quoteSource
                     it[tags] = quote.tags.joinToString(", ")
@@ -64,7 +67,7 @@ class PendingQuoteRepositoryImpl : PendingQuoteRepository {
                 .map {
                     Quote(
                         id = it[PendingQuotes.id],
-                        title = it[PendingQuotes.text],
+                        quoteText = it[PendingQuotes.quoteText],
                         author = it[PendingQuotes.author],
                         quoteSource = it[PendingQuotes.quoteSource],
                         tags = it[PendingQuotes.tags].split(", "),
@@ -73,7 +76,7 @@ class PendingQuoteRepositoryImpl : PendingQuoteRepository {
                     )
                 }
 
-            return@transaction quotes.firstOrNull { it.title.lowercase() == cleanedTitle }
+            return@transaction quotes.firstOrNull { it.quoteText.lowercase() == cleanedTitle }
         }
     }
 
@@ -84,54 +87,18 @@ class PendingQuoteRepositoryImpl : PendingQuoteRepository {
     }
 
     override suspend fun promoteQuote(quote: Quote) {
-        val currentQuotes = Quotes.selectAll().map {
-            Quote(
-                id = it[Quotes.id],
-                title = it[Quotes.text],
-                author = it[Quotes.author],
-                quoteSource = it[Quotes.quoteSource],
-                tags = it[Quotes.tags].split(", "),
-                createdAt = it[Quotes.createdAt],
-                loggedBy = it[Quotes.loggedBy]
-            )
-        }
-
-        if (!currentQuotes.contains(quote)) {
-            Quotes.insert {
-                it[text] = quote.title
-                it[author] = quote.author
-                it[quoteSource] = quote.quoteSource
-                it[tags] = quote.tags.joinToString(", ")
-                it[createdAt] = quote.createdAt
-                it[loggedBy] = quote.loggedBy
-            }
+        if (!quoteRepository.getAllQuotes().contains(quote)) {
+            quoteRepository.postQuote(quote = quote)
         }
     }
 
     override suspend fun promoteQuotes(quotes: List<Quote>) {
-        val currentQuotes = Quotes.selectAll().map {
-            Quote(
-                id = it[Quotes.id],
-                title = it[Quotes.text],
-                author = it[Quotes.author],
-                quoteSource = it[Quotes.quoteSource],
-                tags = it[Quotes.tags].split(", "),
-                createdAt = it[Quotes.createdAt],
-                loggedBy = it[Quotes.loggedBy]
-            )
-        }
+        val currentQuotes = quoteRepository.getAllQuotes()
 
         val quotesToPost = quotes.filterNot { it in currentQuotes }
 
         quotesToPost.forEach { quote ->
-            Quotes.insert {
-                it[text] = quote.title
-                it[author] = quote.author
-                it[quoteSource] = quote.quoteSource
-                it[tags] = quote.tags.joinToString(", ")
-                it[createdAt] = quote.createdAt
-                it[loggedBy] = quote.loggedBy
-            }
+            quoteRepository.postQuote(quote = quote)
         }
     }
 }

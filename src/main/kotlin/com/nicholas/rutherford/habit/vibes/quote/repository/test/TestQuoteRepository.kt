@@ -8,7 +8,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
         overrideQuotes ?: mutableListOf(
             Quote(
                 id = 1,
-                title = "The only limit to our realization of tomorrow is our doubts of today.",
+                quoteText = "The only limit to our realization of tomorrow is our doubts of today.",
                 author = "Franklin D. Roosevelt",
                 quoteSource = "Speech",
                 tags = listOf("inspirational", "motivation", "future"),
@@ -17,7 +17,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 2,
-                title = "In the middle of every difficulty lies opportunity.",
+                quoteText = "In the middle of every difficulty lies opportunity.",
                 author = "Albert Einstein",
                 quoteSource = "Interview",
                 tags = listOf("inspirational", "challenge", "opportunity"),
@@ -26,7 +26,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 3,
-                title = "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+                quoteText = "Success is not final, failure is not fatal: It is the courage to continue that counts.",
                 author = "Winston Churchill",
                 quoteSource = "Speech",
                 tags = listOf("success", "failure", "perseverance"),
@@ -35,7 +35,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 4,
-                title = "Happiness is not something ready-made. It comes from your own actions.",
+                quoteText = "Happiness is not something ready-made. It comes from your own actions.",
                 author = "Dalai Lama",
                 quoteSource = "Book",
                 tags = listOf("happiness", "self-help", "life"),
@@ -44,7 +44,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 5,
-                title = "The future belongs to those who believe in the beauty of their dreams.",
+                quoteText = "The future belongs to those who believe in the beauty of their dreams.",
                 author = "Eleanor Roosevelt",
                 quoteSource = "Speech",
                 tags = listOf("dreams", "future", "inspiration"),
@@ -53,7 +53,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 6,
-                title = "It does not matter how slowly you go as long as you do not stop.",
+                quoteText = "It does not matter how slowly you go as long as you do not stop.",
                 author = "Confucius",
                 quoteSource = "Ancient Text",
                 tags = listOf("perseverance", "patience", "motivation"),
@@ -62,7 +62,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 7,
-                title = "Believe you can and you're halfway there.",
+                quoteText = "Believe you can and you're halfway there.",
                 author = "Theodore Roosevelt",
                 quoteSource = "Book",
                 tags = listOf("belief", "motivation", "success"),
@@ -71,7 +71,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 8,
-                title = "Everything you’ve ever wanted is on the other side of fear.",
+                quoteText = "Everything you’ve ever wanted is on the other side of fear.",
                 author = "George Addair",
                 quoteSource = "Lecture",
                 tags = listOf("fear", "motivation", "growth"),
@@ -80,7 +80,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 9,
-                title = "Do what you can, with what you have, where you are.",
+                quoteText = "Do what you can, with what you have, where you are.",
                 author = "Theodore Roosevelt",
                 quoteSource = "Speech",
                 tags = listOf("resourcefulness", "action", "motivation"),
@@ -89,7 +89,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
             Quote(
                 id = 10,
-                title = "Your time is limited, so don’t waste it living someone else’s life.",
+                quoteText = "Your time is limited, so don’t waste it living someone else’s life.",
                 author = "Steve Jobs",
                 quoteSource = "Commencement Speech",
                 tags = listOf("life", "motivation", "individuality"),
@@ -98,14 +98,14 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
             ),
         )
 
-    override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.title.equals(title, ignoreCase = true) }
+    override suspend fun getQuoteByTitle(title: String): Quote? = quotes.find { it.quoteText.equals(title, ignoreCase = true) }
 
     override suspend fun getRandomQuote(): Quote? = quotes.random()
 
     override suspend fun getAllQuotes(): List<Quote> = quotes
 
     override suspend fun postQuote(quote: Quote) {
-        if (getQuoteByTitle(title = quote.title) != null) {
+        if (getQuoteByTitle(title = quote.quoteText) != null) {
             throw IllegalStateException("Cannot create duplicate quote titles!")
         }
         quotes.add(quote)
@@ -115,7 +115,7 @@ class TestQuoteRepository(overrideQuotes: MutableList<Quote>? = null) : QuoteRep
         val quotesToAddArrayList: ArrayList<Quote> = arrayListOf()
 
         quotesList.forEach { quote ->
-            if (getQuoteByTitle(title = quote.title) == null) {
+            if (getQuoteByTitle(title = quote.quoteText) == null) {
                 quotesToAddArrayList.add(quote)
             } else {
                 println("Cannot add quote $quote since it already exists")

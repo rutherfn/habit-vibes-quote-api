@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.Table
 
 object PendingQuotes : Table("pending_quotes") {
     val id = integer("id").autoIncrement()
-    val text = text("text")
+    val quoteText = text("text")
     val author = text("author")
     val quoteSource = text("quotesource")
     val tags = text("tags")
@@ -16,7 +16,7 @@ object PendingQuotes : Table("pending_quotes") {
 
 object Quotes : Table("quotes") {
     val id = integer("id").autoIncrement()
-    val text = text("text")
+    val quoteText = text("text")
     val author = text("author")
     val quoteSource = text("quotesource")
     val tags = text("tags")

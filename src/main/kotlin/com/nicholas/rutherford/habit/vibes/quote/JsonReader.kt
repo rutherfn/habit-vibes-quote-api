@@ -3,29 +3,26 @@ package com.nicholas.rutherford.habit.vibes.quote
 import com.nicholas.rutherford.habit.vibes.quote.model.Toggle
 import com.nicholas.rutherford.habit.vibes.quote.model.ToggleList
 import kotlinx.serialization.json.Json
-import java.io.File
+import java.io.InputStream
 
 class JsonReader {
     fun readEnableToggles(path: String): List<Toggle> {
-        val toggleArrayList: ArrayList<Toggle> = arrayListOf()
+        val toggleArrayList = arrayListOf<Toggle>()
 
-        val file = File(path)
+        val inputStream: InputStream? = this::class.java.classLoader.getResourceAsStream(path)
 
-        if (!file.exists() || file.isDirectory) {
-            println("Cannot grab toggles when file exists is ${file.exists()} and isDirectory is set to ${file.isDirectory}")
+        if (inputStream == null) {
+            println("Resource not found: $path")
             return toggleArrayList
-        } else {
-            val json = file.readText()
-            try {
-                val toggleList = Json.Default.decodeFromString<ToggleList>(json)
-                toggleList.toggles.forEach { toggle ->
-                    toggleArrayList.add(toggle)
-                }
-                return toggleArrayList
-            } catch (e: Exception) {
-                println("Failed to parse JSON: ${e.message}")
-                return toggleArrayList
-            }
+        }
+
+        return try {
+            val json = inputStream.bufferedReader().use { it.readText() }
+            val parser = Json { ignoreUnknownKeys = true }
+            parser.decodeFromString<ToggleList>(json).toggles
+        } catch (e: Exception) {
+            println("Failed to parse JSON: ${e.message}")
+            toggleArrayList
         }
     }
 }

@@ -11,5 +11,7 @@ interface QuoteRepository {
 
     suspend fun getQuoteByTitle(title: String): Quote?
 
+    suspend fun getRandomQuote(): Quote?
+
     suspend fun removeQuote(quote: Quote)
 }

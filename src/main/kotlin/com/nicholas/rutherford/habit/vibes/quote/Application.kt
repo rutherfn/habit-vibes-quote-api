@@ -1,5 +1,7 @@
 package com.nicholas.rutherford.habit.vibes.quote
 
+import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.PendingQuoteRepositoryImpl
+import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.QuoteRepositoryImpl
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.server.application.Application
@@ -9,11 +11,34 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val quoteRepository = TestQuoteRepository()
-    val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
-    // val jsonReader = JsonReader() todo -> Used to enable test data vs database data
+    val isTestEnabled =
+        JsonReader()
+            .readEnableToggles(path = "toggles/enable_toggles.json")
+            .first().enabled
+
+    val quoteRepository =
+        if (isTestEnabled) {
+            TestQuoteRepository()
+        } else {
+            QuoteRepositoryImpl()
+        }
+
+    val pendingQuoteRepository =
+        if (isTestEnabled) {
+            TestPendingQuoteRepository(quoteRepository = quoteRepository)
+        } else {
+            PendingQuoteRepositoryImpl(quoteRepository = quoteRepository)
+        }
 
     configureSerialization()
-    configureDatabases()
-    configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
+
+    if (!isTestEnabled) {
+        configureDatabases()
+    }
+    configureAuthentication()
+
+    configureRouting(
+        quoteRepository = quoteRepository,
+        pendingQuoteRepository = pendingQuoteRepository,
+    )
 }

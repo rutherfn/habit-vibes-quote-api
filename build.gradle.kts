@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.host.common)
     implementation(libs.ktor.server.status.pages)
@@ -32,6 +33,8 @@ dependencies {
     implementation(libs.swagger)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
+    implementation(libs.dotenv.kotlin)
     implementation(libs.exposed.jdbc)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)

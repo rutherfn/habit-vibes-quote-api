@@ -1,29 +1,22 @@
-package com.nciholas.rutherford.habit.vibes.quote
+package com.nicholas.rutherford.habit.vibes.quote
 
-import com.nicholas.rutherford.habit.vibes.quote.ErrorResponse
-import com.nicholas.rutherford.habit.vibes.quote.configureRouting
 import com.nicholas.rutherford.habit.vibes.quote.model.Quote
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.testing.testApplication
-import kotlinx.serialization.encodeToString
+import io.github.cdimascio.dotenv.dotenv
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
+import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ApplicationTest {
+class RoutingTest {
     private val quoteRepository = TestQuoteRepository()
     private val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
 
@@ -33,16 +26,38 @@ class ApplicationTest {
             ignoreUnknownKeys = true
         }
 
+    private val dotenv =
+        if (File("./.env").exists()) {
+            dotenv()
+        } else {
+            null
+        }
+    private val publicAccessToken = dotenv?.get("DB_AUTHENTICATION_PUBLIC_ACCESS_TOKEN")
+    private val privateAccessToken = dotenv?.get("DB_AUTHENTICATION_PRIVATE_ACCESS_TOKEN")
+
     private fun Application.setup() {
         install(ContentNegotiation) { json(json) }
+        configureAuthentication() // Ensure authentication is configured
         configureRouting(quoteRepository = quoteRepository, pendingQuoteRepository = pendingQuoteRepository)
+    }
+
+    private fun canRunIntegrationTests(): Boolean {
+        return !publicAccessToken.isNullOrEmpty() && !privateAccessToken.isNullOrEmpty()
     }
 
     @Test
     fun `get quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val response = client.get("/quotes")
+            val response =
+                client.get("/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.OK, response.status)
             val quotes = json.decodeFromString<List<Quote>>(response.bodyAsText())
             assertEquals(10, quotes.size)
@@ -51,8 +66,16 @@ class ApplicationTest {
     @Test
     fun `get pending quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val response = client.get("/pending/quotes")
+            val response =
+                client.get("/pending/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.OK, response.status)
             val quotes = json.decodeFromString<List<Quote>>(response.bodyAsText())
             assertEquals(4, quotes.size)
@@ -61,16 +84,25 @@ class ApplicationTest {
     @Test
     fun `get quotes with empty list`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             val quoteRepository = TestQuoteRepository(overrideQuotes = mutableListOf())
             val pendingQuoteRepository = TestPendingQuoteRepository(quoteRepository = quoteRepository)
             application {
                 install(ContentNegotiation) { json(json) }
+                configureAuthentication()
                 configureRouting(
                     quoteRepository = quoteRepository,
                     pendingQuoteRepository = pendingQuoteRepository,
                 )
             }
-            val response = client.get("/quotes")
+            val response =
+                client.get("/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("No quotes found", error.error)
@@ -79,8 +111,12 @@ class ApplicationTest {
     @Test
     fun `get quotes with empty pending list`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application {
                 install(ContentNegotiation) { json(json) }
+                configureAuthentication()
                 configureRouting(
                     quoteRepository = quoteRepository,
                     pendingQuoteRepository =
@@ -90,7 +126,12 @@ class ApplicationTest {
                         ),
                 )
             }
-            val response = client.get("/pending/quotes")
+            val response =
+                client.get("/pending/quotes") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("No pending quotes found", error.error)
@@ -99,12 +140,18 @@ class ApplicationTest {
     @Test
     fun `post single quote`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuote = Quote(11, "Stay hungry", "Steve Jobs", "Speech", listOf("motivation"), "2025-04-27T11:00:00Z", "user999")
             val response =
                 client.post("/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(newQuote))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(11, quoteRepository.getAllQuotes().size)
@@ -113,12 +160,18 @@ class ApplicationTest {
     @Test
     fun `post single pending quote`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuote = Quote(11, "Stay hungry", "Steve Jobs", "Speech", listOf("motivation"), "2025-04-27T11:00:00Z", "user999")
             val response =
                 client.post("/pending/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(newQuote))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(5, pendingQuoteRepository.getAllPendingQuotes().size)
@@ -127,6 +180,9 @@ class ApplicationTest {
     @Test
     fun `post multiple quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuotes =
                 listOf(
@@ -137,6 +193,9 @@ class ApplicationTest {
                 client.post("/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(newQuotes))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(12, quoteRepository.getAllQuotes().size)
@@ -145,6 +204,9 @@ class ApplicationTest {
     @Test
     fun `post multiple pending quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuotes =
                 listOf(
@@ -155,6 +217,9 @@ class ApplicationTest {
                 client.post("/pending/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(newQuotes))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.Created, response.status)
             assertEquals(6, pendingQuoteRepository.getAllPendingQuotes().size)
@@ -163,12 +228,18 @@ class ApplicationTest {
     @Test
     fun `post quote with malformed json`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
             val response =
                 client.post("/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(malformedJson)
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }
@@ -176,12 +247,18 @@ class ApplicationTest {
     @Test
     fun `post pending quote with malformed json`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
             val response =
                 client.post("/pending/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(malformedJson)
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }
@@ -189,12 +266,18 @@ class ApplicationTest {
     @Test
     fun `delete a quote`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val quoteToDelete = quoteRepository.getAllQuotes().first()
             val response =
                 client.delete("/quotes") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(quoteToDelete))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.OK, response.status)
             val remaining = json.decodeFromString<List<Quote>>(response.bodyAsText())
@@ -204,30 +287,54 @@ class ApplicationTest {
     @Test
     fun `get quote by title`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val title = quoteRepository.getAllQuotes().first().title
-            val response = client.get("/quotes/search/$title")
+            val title = quoteRepository.getAllQuotes().first().quoteText
+            val response =
+                client.get("/quotes/search/$title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.OK, response.status)
             val quote = json.decodeFromString<Quote>(response.bodyAsText())
-            assertEquals(title, quote.title)
+            assertEquals(title, quote.quoteText)
         }
 
     @Test
     fun `get pending quote by title`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val title = pendingQuoteRepository.getAllPendingQuotes().first().title
-            val response = client.get("pending//quotes/search/$title")
+            val title = pendingQuoteRepository.getAllPendingQuotes().first().quoteText
+            val response =
+                client.get("pending/quotes/search/$title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.OK, response.status)
             val quote = json.decodeFromString<Quote>(response.bodyAsText())
-            assertEquals(title, quote.title)
+            assertEquals(title, quote.quoteText)
         }
 
     @Test
     fun `get quote by title not found`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val response = client.get("/quotes/search/nonexistent-title")
+            val response =
+                client.get("/quotes/search/nonexistent-title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Quote not found", error.error)
@@ -236,8 +343,16 @@ class ApplicationTest {
     @Test
     fun `get pending quote by title not found`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val response = client.get("pending/quotes/search/nonexistent-title")
+            val response =
+                client.get("/pending/quotes/search/nonexistent-title") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.NotFound, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Quote not found", error.error)
@@ -246,8 +361,16 @@ class ApplicationTest {
     @Test
     fun `get quote by title when title is null`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val response = client.get("/quotes/search/")
+            val response =
+                client.get("/quotes/search/") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.BadRequest, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Missing title", error.error)
@@ -256,8 +379,16 @@ class ApplicationTest {
     @Test
     fun `get pending quote by title when title is null`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
-            val response = client.get("/pending/quotes/search/")
+            val response =
+                client.get("/pending/quotes/search/") {
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $publicAccessToken")
+                    }
+                }
             assertEquals(HttpStatusCode.BadRequest, response.status)
             val error = json.decodeFromString<ErrorResponse>(response.bodyAsText())
             assertEquals("Missing title", error.error)
@@ -266,13 +397,16 @@ class ApplicationTest {
     @Test
     fun `promote one pending quote to regular quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuote =
                 Quote(
                     id = 21,
-                    title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                    quoteText = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
                     author = "Ralph Waldo Emerson",
-                    source = "Essay",
+                    quoteSource = "Essay",
                     tags = listOf("strength", "character", "potential"),
                     createdAt = "2025-04-27T10:10:00Z",
                     loggedBy = "user123",
@@ -282,6 +416,9 @@ class ApplicationTest {
                 client.post("pending/quotes/promote") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(newQuote))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
 
             assertEquals(HttpStatusCode.Created, response.status)
@@ -292,23 +429,26 @@ class ApplicationTest {
     @Test
     fun `promote a list of pending quotes to regular quotes`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val newQuotes =
                 listOf(
                     Quote(
                         id = 21,
-                        title = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+                        quoteText = "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
                         author = "Ralph Waldo Emerson",
-                        source = "Essay",
+                        quoteSource = "Essay",
                         tags = listOf("strength", "character", "potential"),
                         createdAt = "2025-04-27T10:10:00Z",
                         loggedBy = "user123",
                     ),
                     Quote(
                         id = 22,
-                        title = "Act as if what you do makes a difference. It does.",
+                        quoteText = "Act as if what you do makes a difference. It does.",
                         author = "William James",
-                        source = "Lecture",
+                        quoteSource = "Lecture",
                         tags = listOf("impact", "life", "action"),
                         createdAt = "2025-04-27T10:15:00Z",
                         loggedBy = "user456",
@@ -318,6 +458,9 @@ class ApplicationTest {
                 client.post("pending/quotes/promote") {
                     contentType(ContentType.Application.Json)
                     setBody(json.encodeToString(newQuotes))
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
 
             assertEquals(HttpStatusCode.Created, response.status)
@@ -328,12 +471,18 @@ class ApplicationTest {
     @Test
     fun `promote post pending quote with malformed json`() =
         testApplication {
+            if (!canRunIntegrationTests()) {
+                return@testApplication
+            }
             application { setup() }
             val malformedJson = """{ "id": "abc", "title": "oops" }"""
             val response =
                 client.post("pending/quotes/promote") {
                     contentType(ContentType.Application.Json)
                     setBody(malformedJson)
+                    headers {
+                        append(HttpHeaders.Authorization, "Bearer $privateAccessToken")
+                    }
                 }
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }

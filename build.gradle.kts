@@ -47,4 +47,3 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.jayway.jsonpath)
 }
-

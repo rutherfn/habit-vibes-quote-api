@@ -36,6 +36,10 @@ tasks.register<Jar>("fatJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+tasks.create("stage") {
+    dependsOn("installDist")
+}
+
 dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.core)

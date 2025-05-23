@@ -1,9 +1,9 @@
 ktor:
     deployment:
-        port: ${PORT}   # Railway sets this env var dynamically
+        port: ${PORT}
         watch:
             - classes
     application:
         modules:
-            - com.yourpackage.ApplicationKt.module  # Replace with your actual module
+            - com.nicholas.rutherford.habit.vibes.quote.ApplicationKt.module
 

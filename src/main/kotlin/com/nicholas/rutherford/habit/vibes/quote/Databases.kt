@@ -6,12 +6,13 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureDatabases() {
-    val db = Database.connect(
-        url = System.getenv("DB_URL"),
-        driver = System.getenv("DB_DRIVER"),
-        user = System.getenv("DB_USER"),
-        password = System.getenv("DB_PASSWORD"),
-    )
+    val db =
+        Database.connect(
+            url = System.getenv("DB_URL"),
+            driver = System.getenv("DB_DRIVER"),
+            user = System.getenv("DB_USER"),
+            password = System.getenv("DB_PASSWORD"),
+        )
 
     checkForDbConnection(db = db)
 }

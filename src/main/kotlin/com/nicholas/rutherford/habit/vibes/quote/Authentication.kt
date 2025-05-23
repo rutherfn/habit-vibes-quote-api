@@ -1,16 +1,11 @@
 package com.nicholas.rutherford.habit.vibes.quote
 
-import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.*
-import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.UserIdPrincipal
-import io.ktor.server.auth.bearer
+import io.ktor.server.auth.*
 
 fun Application.configureAuthentication() {
-    val dotenv = dotenv()
-
-    val publicAccessToken = dotenv["DB_AUTHENTICATION_PUBLIC_ACCESS_TOKEN"]
-    val privateAccessToken = dotenv["DB_AUTHENTICATION_PRIVATE_ACCESS_TOKEN"]
+    val publicAccessToken = System.getenv("DB_AUTHENTICATION_PUBLIC_ACCESS_TOKEN")
+    val privateAccessToken = System.getenv("DB_AUTHENTICATION_PRIVATE_ACCESS_TOKEN")
 
     install(Authentication) {
         bearer("public-access") {

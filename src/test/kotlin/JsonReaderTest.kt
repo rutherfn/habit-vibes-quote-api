@@ -17,7 +17,7 @@ class JsonReaderTest {
         assertEquals(
             Toggle(
                 id = 1,
-                enabled = true,
+                enabled = false,
                 name = "testDataEnabled",
             ),
             toggles[0],

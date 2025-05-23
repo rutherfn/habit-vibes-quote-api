@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
@@ -22,10 +21,14 @@ repositories {
 }
 
 tasks.register<Jar>("fatJar") {
-    archiveClassifier.set("all")
+    archiveBaseName.set("api")            // Sets the JAR name prefix to "api"
+    archiveClassifier.set("all")          // Adds "-all" to the filename → api-all.jar
+    archiveVersion.set("")                // Optional: removes version from filename
+
     manifest {
         attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
     }
+
     from(sourceSets.main.get().output)
 
     dependsOn(configurations.runtimeClasspath)
@@ -37,7 +40,7 @@ tasks.register<Jar>("fatJar") {
 }
 
 tasks.register("stage") {
-    dependsOn("clean", "build")
+    dependsOn("fatJar")
 }
 
 dependencies {
@@ -63,3 +66,4 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.jayway.jsonpath)
 }
+

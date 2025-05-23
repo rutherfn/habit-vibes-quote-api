@@ -11,7 +11,7 @@ version = "0.0.1"
 application {
     mainClass = "io.ktor.server.netty.EngineMain"
 
-    val isDevelopment: Boolean = project.ext.has("development")
+    val isDevelopment: Boolean = project.hasProperty("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
@@ -21,9 +21,9 @@ repositories {
 }
 
 tasks.register<Jar>("fatJar") {
-    archiveBaseName.set("api")            // Sets the JAR name prefix to "api"
-    archiveClassifier.set("all")          // Adds "-all" to the filename → api-all.jar
-    archiveVersion.set("")                // Optional: removes version from filename
+    archiveBaseName.set("api")            // JAR name: api-all.jar
+    archiveClassifier.set("all")          // Suffix
+    archiveVersion.set("")                // No version in filename
 
     manifest {
         attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
@@ -39,6 +39,7 @@ tasks.register<Jar>("fatJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+// This is what Heroku runs by default
 tasks.register("stage") {
     dependsOn("fatJar")
 }

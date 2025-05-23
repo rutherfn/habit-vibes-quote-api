@@ -5,9 +5,13 @@ import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.QuoteReposi
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
 import io.ktor.server.application.Application
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+    embeddedServer(Netty, port = System.getenv("PORT").toInt()) {
+        module()
+    }.start(wait = true)
 }
 
 fun Application.module() {

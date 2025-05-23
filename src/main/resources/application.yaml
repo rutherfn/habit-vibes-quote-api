@@ -1,9 +1,0 @@
-ktor:
-    deployment:
-        port: ${PORT}
-        watch:
-            - classes
-    application:
-        modules:
-            - com.nicholas.rutherford.habit.vibes.quote.ApplicationKt.module
-

@@ -20,28 +20,8 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-tasks.register<Jar>("fatJar") {
-    archiveBaseName.set("api")            // JAR name: api-all.jar
-    archiveClassifier.set("all")          // Suffix
-    archiveVersion.set("")                // No version in filename
-
-    manifest {
-        attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
-    }
-
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-// This is what Heroku runs by default
-tasks.register("stage") {
-    dependsOn("fatJar")
+tasks {
+    create("stage").dependsOn("installDist")
 }
 
 dependencies {

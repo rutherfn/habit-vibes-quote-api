@@ -4,26 +4,27 @@ import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.PendingQuot
 import com.nicholas.rutherford.habit.vibes.quote.repository.postgres.QuoteRepositoryImpl
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestPendingQuoteRepository
 import com.nicholas.rutherford.habit.vibes.quote.repository.test.TestQuoteRepository
-import io.github.cdimascio.dotenv.dotenv
-import io.ktor.server.application.Application
+import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
 fun Application.module() {
-    val dotenv = dotenv()
-    val isTestDataEnabled = dotenv["TEST_DATA_ENABLED"].toBoolean()
+    val isTestEnabled =
+        JsonReader()
+            .readEnableToggles(path = "toggles/enable_toggles.json")
+            .first().enabled
 
     val quoteRepository =
-        if (isTestDataEnabled) {
+        if (isTestEnabled) {
             TestQuoteRepository()
         } else {
             QuoteRepositoryImpl()
         }
 
     val pendingQuoteRepository =
-        if (isTestDataEnabled) {
+        if (isTestEnabled) {
             TestPendingQuoteRepository(quoteRepository = quoteRepository)
         } else {
             PendingQuoteRepositoryImpl(quoteRepository = quoteRepository)
@@ -31,7 +32,7 @@ fun Application.module() {
 
     configureSerialization()
 
-    if (!isTestDataEnabled) {
+    if (!isTestEnabled) {
         configureDatabases()
     }
     configureAuthentication()

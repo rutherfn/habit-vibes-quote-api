@@ -1,19 +1,17 @@
 package com.nicholas.rutherford.habit.vibes.quote
 
-import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureDatabases() {
-    val dotenv = dotenv()
     val db =
         Database.connect(
-            url = dotenv["DB_URL"],
-            driver = dotenv["DB_DRIVER"],
-            user = dotenv["DB_USER"],
-            password = dotenv["DB_PASSWORD"],
+            url = System.getenv("DB_URL"),
+            driver = System.getenv("DB_DRIVER"),
+            user = System.getenv("DB_USER"),
+            password = System.getenv("DB_PASSWORD"),
         )
 
     checkForDbConnection(db = db)

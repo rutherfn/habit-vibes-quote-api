@@ -36,8 +36,8 @@ tasks.register<Jar>("fatJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.create("stage") {
-    dependsOn("installDist")
+tasks.register("stage") {
+    dependsOn("clean", "build")
 }
 
 dependencies {

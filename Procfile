@@ -1,1 +1,1 @@
-web: java -jar build/libs/api-all.jar
+web: ./build/install/api/bin/api

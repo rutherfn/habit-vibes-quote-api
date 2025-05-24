@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    kotlin("jvm") version "2.0.0"
+    id("application")
     alias(libs.plugins.ktor)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.kotlin.plugin.serialization)
@@ -9,10 +10,16 @@ group = "com.nicholas.rutherford.habit.vibes.quote"
 version = "0.0.1"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass.set("com.nicholas.rutherford.habit.vibes.quote.ApplicationKt")
 
     val isDevelopment: Boolean = project.hasProperty("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+ktor {
+    fatJar {
+        archiveFileName.set("habit-vibes-quote-api.jar")
+    }
 }
 
 repositories {

@@ -1,9 +1,0 @@
-{
-  "toggles": [
-    { this should not work
-      "id": 1,
-      "enabled": true
-      "name": "testDataEnabled"
-    }
-  ]
-}

@@ -53,11 +53,6 @@ tmp/
 temp/
 dist/
 
-### Node (if you have any frontend components) ###
-node_modules/
-npm-debug.log
-yarn-error.log
-
 ### Database ###
 *.db
 *.sqlite

@@ -4,8 +4,8 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 
 fun Application.configureAuthentication() {
-    val publicAccessToken = System.getenv("DB_AUTHENTICATION_PUBLIC_ACCESS_TOKEN")
-    val privateAccessToken = System.getenv("DB_AUTHENTICATION_PRIVATE_ACCESS_TOKEN")
+    val publicAccessToken = "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    val privateAccessToken = "fedcba98-7654-3210-fedc-ba9876543210"
 
     install(Authentication) {
         bearer("public-access") {

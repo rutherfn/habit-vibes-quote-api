@@ -1,0 +1,69 @@
+### Kotlin ###
+.kotlin
+.kt
+*.class
+*.log
+*.ctxt
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### VS Code ###
+.vscode/
+.history/
+
+### Mac OS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+### Environment Variables ###
+.env
+*.env
+.env.*
+
+### Logs ###
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### Docker ###
+*.env
+.docker/
+docker-compose.override.yml
+
+### Project Specific ###
+tmp/
+temp/
+dist/
+
+### Node (if you have any frontend components) ###
+node_modules/
+npm-debug.log
+yarn-error.log
+
+### Database ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Local Configuration ###
+application-local.conf
+application-local.yml
+application-local.properties

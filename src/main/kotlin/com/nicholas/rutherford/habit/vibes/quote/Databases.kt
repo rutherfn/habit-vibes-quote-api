@@ -14,6 +14,8 @@ fun Application.configureDatabases() {
             password = System.getenv("DB_PASSWORD"),
         )
 
+    // test code here
+
     checkForDbConnection(db = db)
 }
 
